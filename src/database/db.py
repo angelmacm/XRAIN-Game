@@ -39,7 +39,7 @@ class BattleRoyaleDB:
             sessionResult = await session.execute(query)
             sessionResult = sessionResult.first()
             
-            loggingInstance.error(f"getNFTInfo({xrpId}): {sessionResult}") if self.verbose else None
+            loggingInstance.info(f"getNFTInfo({xrpId}): {sessionResult}") if self.verbose else None
 
             if not sessionResult:
                 raise Exception("xrpIdNotFound")
@@ -57,4 +57,4 @@ class BattleRoyaleDB:
             await session.execute(
                 update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(tokenIdBattleNFT = token)
                     )
-            loggingInstance.error(f"setNFT({xrpId}, {token}): Success") if self.verbose else None
+            loggingInstance.info(f"setNFT({xrpId}, {token}): Success") if self.verbose else None
