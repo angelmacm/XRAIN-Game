@@ -29,4 +29,4 @@ class RewardsTable(Base):
     xrainPower = Column(Integer)
     nftlink = Column(VARCHAR)
     reserveXRAIN = Column(Integer)
-    reserveBoost = Column(Integer)
+    reserveBoosts = Column(Integer)
