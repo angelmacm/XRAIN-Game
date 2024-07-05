@@ -25,3 +25,8 @@ class RewardsTable(Base):
     penaltyTraits3DRewards = Column(Integer)
     reputationFlag = Column(Integer)
     finalRepTraitRewards = column_property(Column('FINALRepTraitRewards', Integer))
+    tokenIdBattleNFT = Column(VARCHAR)
+    xrainPower = Column(Integer)
+    nftlink = Column(VARCHAR)
+    reserveXRAIN = Column(Integer)
+    reserveBoost = Column(Integer)
