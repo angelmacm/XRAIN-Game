@@ -5,6 +5,7 @@ class Players:
         self.name = name
         self.discordId = discordId
         self.alive = True
+        self.reviveNum = 0
     
     def setNFT(self, tokenId):
         self.NFT = tokenId
@@ -20,3 +21,4 @@ class Players:
         
     def revive(self):
         self.alive = True
+        self.reviveNum += 1
