@@ -12,6 +12,7 @@ class NFTTraitList(Base):
 
     uri = Column(VARCHAR, primary_key=True)
     tokenId = Column(VARCHAR, index=True)
+    nftGroupName = column_property(Column('NFTGroupName', VARCHAR))
     taxonId = Column(Integer)
     xrpId = Column(VARCHAR)
     xrpIdOld = Column(VARCHAR)
