@@ -38,6 +38,8 @@ class BattleRoyaleDB:
                     
             sessionResult = await session.execute(query)
             sessionResult = sessionResult.first()
+            
+            loggingInstance.error(f"getNFTInfo({xrpId}): {sessionResult}") if self.verbose else None
 
             if not sessionResult:
                 raise Exception("xrpIdNotFound")
@@ -49,3 +51,10 @@ class BattleRoyaleDB:
                     'nftLink': nftLink,
                     'reserveXrain': reserveXrain,
                     'reserveBoosts': reserveBoosts}
+            
+    async def setNFT(self, xrpId, token):
+        async with self.asyncSessionMaker() as session:     
+            await session.execute(
+                update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(tokenIdBattleNFT = token)
+                    )
+            loggingInstance.error(f"setNFT({xrpId}, {token}): Success") if self.verbose else None
