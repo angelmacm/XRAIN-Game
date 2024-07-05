@@ -6,6 +6,10 @@ name = "pypi"
 [packages]
 xrpl-py = "*"
 discord-py-interactions = "*"
+sqlalchemy = {extras = ["asyncio"], version = "*"}
+logging = "*"
+aiomysql = "*"
+configparser = "*"
 
 [dev-packages]
 
