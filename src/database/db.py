@@ -58,3 +58,32 @@ class BattleRoyaleDB:
                 update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(tokenIdBattleNFT = token)
                     )
             loggingInstance.info(f"setNFT({xrpId}, {token}): Success") if self.verbose else None
+    
+    async def getNFTOption(self, xrpId):
+        async with self.asyncSessionMaker() as session:     
+            query = select(NFTTraitList.tokenId,
+                           NFTTraitList.nftlink,
+                           NFTTraitList.totalXRAIN,
+                           NFTTraitList.nftGroupName
+                    ).filter(
+                            NFTTraitList.xrpId == xrpId,
+                            NFTTraitList.nftlink != ''
+                    )
+            queryResult = await session.execute(query)
+            queryResult = queryResult.all()
+            
+            if not queryResult:
+                raise Exception("xrpIdNotFound")
+            
+            nftOptions = {}
+            
+            for row in queryResult:
+                tokenId, nftLink, totalXrain, nftGroupName = row
+                if nftGroupName in nftGroupName.keys():
+                    nftOptions[nftGroupName].append({"tokenId": tokenId, 'nftLink': nftLink, 'totalXrain': totalXrain})
+                else:
+                    nftOptions[nftGroupName] = [{"tokenId": tokenId, 'nftLink': nftLink, 'totalXrain': totalXrain}]
+            
+            loggingInstance.error(f"getNFTOption({xrpId}): {nftOptions}") if self.verbose else None
+            
+            return nftOptions
