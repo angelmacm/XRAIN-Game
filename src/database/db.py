@@ -53,11 +53,12 @@ class BattleRoyaleDB:
                     'reserveBoosts': reserveBoosts}
             
     async def setNFT(self, xrpId, token):
-        async with self.asyncSessionMaker() as session:     
-            await session.execute(
-                update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(tokenIdBattleNFT = token)
-                    )
-            loggingInstance.info(f"setNFT({xrpId}, {token}): Success") if self.verbose else None
+        async with self.asyncSessionMaker() as session:    
+            async with session.begin(): 
+                await session.execute(
+                    update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(tokenIdBattleNFT = token)
+                        )
+                loggingInstance.info(f"setNFT({xrpId}, {token}): Success") if self.verbose else None
     
     async def getNFTOption(self, xrpId):
         async with self.asyncSessionMaker() as session:     
