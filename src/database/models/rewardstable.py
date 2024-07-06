@@ -30,3 +30,6 @@ class RewardsTable(Base):
     nftlink = Column(VARCHAR)
     reserveXRAIN = Column(Integer)
     reserveBoosts = Column(Integer)
+    battleWins = Column(Integer)
+    nftGroupName = column_property(Column('NFTGroupName', Integer))
+    taxonId = Column(Integer)
