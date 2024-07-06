@@ -31,7 +31,8 @@ class BattleRoyaleDB:
                         RewardsTable.xrainPower,
                         RewardsTable.nftlink,
                         RewardsTable.reserveXRAIN,
-                        RewardsTable.reserveBoosts
+                        RewardsTable.reserveBoosts,
+                        RewardsTable.battleWins
                     ).filter(
                         RewardsTable.xrpId == xrpId
                     )

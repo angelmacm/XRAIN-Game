@@ -1,11 +1,12 @@
 class Players:
-    def __init__(self, xrpId, wager, name, discordId):
+    def __init__(self, xrpId, wager, name, discordId, battleWins):
         self.xrpId = xrpId
         self.wager = wager
         self.name = name
         self.discordId = discordId
         self.alive = True
         self.reviveNum = 0
+        self.battleWins = battleWins
     
     def setNFT(self, tokenId):
         self.NFT = tokenId
