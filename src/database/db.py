@@ -129,3 +129,20 @@ class BattleRoyaleDB:
                     update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(reserveBoosts = RewardsTable.reserveBoosts - 1)
                         )
                 loggingInstance.info(f"addBoost({xrpId}): Success") if self.verbose else None
+                
+    async def getRandomQuote(self):
+        async with self.asyncSessionMaker() as session:    
+            query = select(BattleQuotes.quoteType,
+                           BattleQuotes.quoteDesc
+                    ).order_by(
+                            func.random()
+                    )
+            queryResult = await session.execute(query)
+            queryResult = queryResult.all()
+            
+            if not queryResult:
+                loggingInstance.info(f"addBoost(): RandomQuoteGetError") if self.verbose else None
+                raise Exception("RandomQuoteGetError")
+            
+            loggingInstance.info(f"addBoost(): {queryResult}") if self.verbose else None
+            return queryResult
