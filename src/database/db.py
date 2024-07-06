@@ -81,7 +81,7 @@ class BattleRoyaleDB:
             
             for row in queryResult:
                 tokenId, nftLink, totalXrain, nftGroupName = row
-                if nftGroupName in nftGroupName.keys():
+                if nftGroupName in nftOptions.keys():
                     nftOptions[nftGroupName].append({"tokenId": tokenId, 'nftLink': nftLink, 'totalXrain': totalXrain})
                 else:
                     nftOptions[nftGroupName] = [{"tokenId": tokenId, 'nftLink': nftLink, 'totalXrain': totalXrain}]
