@@ -97,4 +97,11 @@ class BattleRoyaleDB:
                     update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(battleWins = RewardsTable.battleWins + 1)
                         )
                 loggingInstance.info(f"addWin({xrpId}): Success") if self.verbose else None
-                
+    
+    async def addBoost(self, xrpId, boost):
+        async with self.asyncSessionMaker() as session:    
+            async with session.begin(): 
+                await session.execute(
+                    update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(reserveBoosts = RewardsTable.reserveBoosts + boost)
+                        )
+                loggingInstance.info(f"addWin({xrpId}): Success") if self.verbose else None
