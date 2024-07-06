@@ -89,3 +89,12 @@ class BattleRoyaleDB:
             loggingInstance.error(f"getNFTOption({xrpId}): {nftOptions}") if self.verbose else None
             
             return nftOptions
+        
+    async def addWin(self, xrpId):
+        async with self.asyncSessionMaker() as session:    
+            async with session.begin(): 
+                await session.execute(
+                    update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(battleWins = RewardsTable.battleWins + 1)
+                        )
+                loggingInstance.info(f"addWin({xrpId}): Success") if self.verbose else None
+                
