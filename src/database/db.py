@@ -113,3 +113,11 @@ class BattleRoyaleDB:
                     update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(reserveXRAIN = RewardsTable.reserveXRAIN + xrain)
                         )
                 loggingInstance.info(f"addXrain({xrpId}): Success") if self.verbose else None
+                
+    async def placeWager(self, xrpId, xrain):
+        async with self.asyncSessionMaker() as session:    
+            async with session.begin(): 
+                await session.execute(
+                    update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(reserveXRAIN = RewardsTable.reserveXRAIN - xrain)
+                        )
+                loggingInstance.info(f"addXrain({xrpId}): Success") if self.verbose else None
