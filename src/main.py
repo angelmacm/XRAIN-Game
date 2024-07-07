@@ -4,8 +4,8 @@ from components.logging import loggingInstance
 
 
 from interactions import Intents, Client, listen, InteractionContext # General discord Interactions import
-from interactions import slash_command, slash_str_option # Slash command imports
-from interactions import Embed, StringSelectMenu, ComponentContext, component_callback, StringSelectOption
+from interactions import slash_command, slash_str_option, slash_int_option # Slash command imports
+from interactions import Embed, StringSelectMenu, ComponentContext, component_callback, StringSelectOption, SlashCommandChoice
 from interactions.api.events import Component
 
 # Other imports
@@ -117,6 +117,36 @@ async def chooseNft(ctx: InteractionContext):
     
     loggingInstance.info(f"NFT Choice: {chosenNFT['label']}")
     
-        
+@slash_command(
+        name="fill-xrain-reserve",
+        description="Buy plays for the battle royale!",
+        options= [
+            slash_str_option(
+                name = "xrpid",
+                description = "XRP Address that will receive the bonus reward",
+                required = True
+            ),
+            slash_int_option(
+                description= "Number of XRAIN you want to wager",
+                name='xrain-amount',
+                choices=[SlashCommandChoice(name='25', value=25),
+                         SlashCommandChoice(name='50', value=50),
+                         SlashCommandChoice(name='100', value=100),
+                         SlashCommandChoice(name='250', value=250),
+                         SlashCommandChoice(name='500', value=500),
+                         SlashCommandChoice(name='1000', value=1000),
+                         ],
+                required=True
+            )
+        ])
+async def buyPlays(ctx: InteractionContext):
+    await ctx.defer(ephemeral=True)
+    xrpId = ctx.kwargs['xrpid']
+    wagerAmount = ctx.kwargs['xrain-amount']
+    
+    # XUMM SDK QR CODE GENERATE AND VALIDATE HERE
+    
+    await ctx.send(f"You have successfully filled your XRAIN Reserves for {wagerAmount}")
+
 if __name__ == "__main__":
     client.start()
