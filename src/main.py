@@ -186,6 +186,45 @@ async def buyBoosts(ctx: InteractionContext):
     
     await ctx.send(f"You have successfully bought {boostAmount} boosts! Now pay {xrainPayment} XRAIN")
     
+@slash_command(
+        name="nft",
+        description="See the NFT that you are using for the battle royale!",
+        options= [
+            slash_str_option(
+                name = "xrpid",
+                description = "XRP Address",
+                required = True
+            )
+        ])
+async def getNFT(ctx: InteractionContext):
+    await ctx.defer(ephemeral=True)
+    
+    xrpId = ctx.kwargs['xrpid']
+    nftInfo = await dbInstance.getNFTInfo(xrpId)
+    
+    embed = Embed(title="Current NFT",
+                      description=f"Your chosen NFT is **__[*{nftInfo['nftToken'][-6:]}](https://xrp.cafe/nft/{nftInfo['nftToken']})__**")
+
+    embed.add_field(name="Base power",
+                    value=str(nftInfo['xrainPower']),
+                    inline=True)
+    embed.add_field(name="Booster Multiplier",
+                    value=f"0.5\nEffective Power:\n{int(nftInfo['xrainPower'])*1.5}",
+                    inline=True)
+    embed.add_field(name="Active Booster",
+                    value="Yes" if int(nftInfo['reserveBoosts']) > 0 else "No",
+                    inline=True)
+    embed.add_field(name="Boosts Remaining",
+                    value=str(nftInfo['reserveBoosts']),
+                    inline=True)
+    embed.add_field(name="XRAIN Reserves",
+                    value=str(nftInfo['reserveXrain']),
+                    inline=True)
+
+    embed.set_image(url=nftInfo['nftLink'])
+
+    await ctx.send(embed=embed)
+    
 
 if __name__ == "__main__":
     client.start()
