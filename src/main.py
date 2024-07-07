@@ -80,6 +80,8 @@ async def bonusXrain(ctx: InteractionContext):
             
     componentResult = await waitComponent(nftMenu, ctx)
     
+    loggingInstance.info(f"Valid NFT Group Choice: {type(componentResult) == Component}")
+    
     if not componentResult:
         return
     
@@ -104,6 +106,8 @@ async def bonusXrain(ctx: InteractionContext):
     
     result = await waitComponent(groupMenu, ctx)
     
+    loggingInstance.info(f"Valid NFT Choice: {type(result) == Component}")
+    
     chosenNFT = int(result.ctx.values[0])
     chosenNFT = nftOptions[chosenGroup][chosenNFT]
     embed = Embed(title="Chosen NFT",
@@ -111,6 +115,7 @@ async def bonusXrain(ctx: InteractionContext):
     embed.add_image(chosenNFT['nftLink'])
     await ctx.edit(content=f"", components=[], embed=embed)
     
+    loggingInstance.info(f"NFT Choice: {chosenNFT['label']}")
     
         
 if __name__ == "__main__":
