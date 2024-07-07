@@ -36,7 +36,7 @@ async def on_ready():
 #       XRP ID: [Required] XRP Address where the users hold their NFTs and the receipient of the reward
 @slash_command(
         name="choose-nft",
-        description="Redeem bonus rewards",
+        description="Choose which NFT you want to use for the battle",
         options= [
             slash_str_option(
                 name = "xrpid",
@@ -44,7 +44,7 @@ async def on_ready():
                 required = True
             )
         ])
-async def bonusXrain(ctx: InteractionContext):
+async def chooseNft(ctx: InteractionContext):
     await ctx.defer(ephemeral=True, suppress_error=True) # Defer the response to wait for the function to run.
     loggingInstance.info(f"/choose-nft called by {ctx.author.display_name}")
     nftOptions = await dbInstance.getNFTOption(ctx.args[0])
