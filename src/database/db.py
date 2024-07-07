@@ -83,10 +83,11 @@ class BattleRoyaleDB:
             
             for row in queryResult:
                 tokenId, nftLink, totalXrain, nftGroupName = row
+                entry = {"tokenId": tokenId, 'nftLink': nftLink, 'totalXrain': totalXrain, 'label': f"*{tokenId[-6:]}   | Base power: {totalXrain}"}
                 if nftGroupName in nftOptions.keys():
-                    nftOptions[nftGroupName].append({"tokenId": tokenId, 'nftLink': nftLink, 'totalXrain': totalXrain})
+                    nftOptions[nftGroupName].append(entry)
                 else:
-                    nftOptions[nftGroupName] = [{"tokenId": tokenId, 'nftLink': nftLink, 'totalXrain': totalXrain}]
+                    nftOptions[nftGroupName] = [entry]
             
             loggingInstance.error(f"getNFTOption({xrpId}): {nftOptions}") if self.verbose else None
             
