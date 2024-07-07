@@ -45,13 +45,14 @@ class BattleRoyaleDB:
             if not sessionResult:
                 raise Exception("xrpIdNotFound")
             
-            tokenId, xrainPower, nftLink, reserveXrain, reserveBoosts = sessionResult
+            tokenId, xrainPower, nftLink, reserveXrain, reserveBoosts, battleWins = sessionResult
             
             return {'nftToken': tokenId,
                     'xrainPower': xrainPower,
                     'nftLink': nftLink,
                     'reserveXrain': reserveXrain,
-                    'reserveBoosts': reserveBoosts}
+                    'reserveBoosts': reserveBoosts,
+                    'battleWins': battleWins}
             
     async def setNFT(self, xrpId, token, nftLink, xrainPower, taxonId, groupName):
         async with self.asyncSessionMaker() as session:    
