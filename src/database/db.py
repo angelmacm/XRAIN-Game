@@ -48,15 +48,15 @@ class BattleRoyaleDB:
             tokenId, xrainPower, nftLink, reserveXrain, reserveBoosts, battleWins = sessionResult
             
             if battleWins >= 100:
-                battleRank = "Diamond Xrain King"
+                battleRank = "Diamond Xrain King :gem::crown:"
             elif battleWins < 10:
-                battleRank = "Rookie"
+                battleRank = "Rookie :punch:"
             elif battleWins < 25:
-                battleRank = "Bronze Warrior"
+                battleRank = "Bronze Warrior :third_place:"
             elif battleWins < 50:
-                battleRank = "Silver Xrain Lord"
+                battleRank = "Silver Xrain Lord :coin:"
             elif battleWins < 100:
-                battleRank = "Golden Oracle Warlord"
+                battleRank = "Golden Oracle Warlord :trident:"
             
             return {'nftToken': tokenId,
                     'xrainPower': xrainPower,
