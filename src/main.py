@@ -154,6 +154,8 @@ async def buyPlays(ctx: InteractionContext):
     
     # XUMM SDK QR CODE GENERATE AND VALIDATE HERE
     
+    await dbInstance.addXrain(xrpId, wagerAmount)
+    
     await ctx.send(f"You have successfully filled your XRAIN Reserves for {wagerAmount}")
     
 @slash_command(
@@ -183,6 +185,8 @@ async def buyBoosts(ctx: InteractionContext):
     
 
     # XUMM SDK QR CODE GENERATE AND VALIDATE HERE
+    
+    await dbInstance.addBoost(xrpId=xrpId, boost=boostAmount)
     
     await ctx.send(f"You have successfully bought {boostAmount} boosts! Now pay {xrainPayment} XRAIN")
     
