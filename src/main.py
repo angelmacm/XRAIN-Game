@@ -110,6 +110,14 @@ async def chooseNft(ctx: InteractionContext):
     
     chosenNFT = int(result.ctx.values[0])
     chosenNFT = nftOptions[chosenGroup][chosenNFT]
+    
+    await dbInstance.setNFT(xrpId=ctx.args[0],
+                            token=chosenNFT['tokenId'],
+                            nftLink=chosenNFT['nftLink'],
+                            xrainPower=chosenNFT['totalXrain'],
+                            taxonId=chosenNFT['taxonId'],
+                            groupName=chosenGroup)
+    
     embed = Embed(title="Chosen NFT",
                   description=f"{chosenNFT['label']}\n\n[View NFT Details](https://xrp.cafe/nft/{chosenNFT['tokenId']})")
     embed.add_image(chosenNFT['nftLink'])
