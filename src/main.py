@@ -147,6 +147,37 @@ async def buyPlays(ctx: InteractionContext):
     # XUMM SDK QR CODE GENERATE AND VALIDATE HERE
     
     await ctx.send(f"You have successfully filled your XRAIN Reserves for {wagerAmount}")
+    
+@slash_command(
+        name="buy-boost",
+        description="Buy boosts for the battle royale!",
+        options= [
+            slash_str_option(
+                name = "xrpid",
+                description = "XRP Address that will receive the bonus reward",
+                required = True
+            ),
+            slash_int_option(
+                description= "Number of XRAIN you want to wager",
+                name='boost-amount',
+                choices=[SlashCommandChoice(name='3', value=3),
+                         SlashCommandChoice(name='10', value=10),
+                         SlashCommandChoice(name='20', value=20),
+                         ],
+                required=True
+            )
+        ])
+async def buyBoosts(ctx: InteractionContext):
+    await ctx.defer(ephemeral=True)
+    xrpId = ctx.kwargs['xrpid']
+    boostAmount = ctx.kwargs['boost-amount']
+    xrainPayment = 50 * boostAmount
+    
+
+    # XUMM SDK QR CODE GENERATE AND VALIDATE HERE
+    
+    await ctx.send(f"You have successfully bought {boostAmount} boosts! Now pay {xrainPayment} XRAIN")
+    
 
 if __name__ == "__main__":
     client.start()
