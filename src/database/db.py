@@ -47,12 +47,24 @@ class BattleRoyaleDB:
             
             tokenId, xrainPower, nftLink, reserveXrain, reserveBoosts, battleWins = sessionResult
             
+            if battleWins >= 100:
+                battleRank = "Diamond Xrain King"
+            elif battleWins < 10:
+                battleRank = "Rookie"
+            elif battleWins < 25:
+                battleRank = "Bronze Warrior"
+            elif battleWins < 50:
+                battleRank = "Silver Xrain Lord"
+            elif battleWins < 100:
+                battleRank = "Golden Oracle Warlord"
+            
             return {'nftToken': tokenId,
                     'xrainPower': xrainPower,
                     'nftLink': nftLink,
                     'reserveXrain': reserveXrain,
                     'reserveBoosts': reserveBoosts,
-                    'battleWins': battleWins}
+                    'battleWins': battleWins,
+                    'battleRank': battleRank}
             
     async def setNFT(self, xrpId, token, nftLink, xrainPower, taxonId, groupName):
         async with self.asyncSessionMaker() as session:    
