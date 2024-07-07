@@ -66,7 +66,8 @@ class BattleRoyaleDB:
             query = select(NFTTraitList.tokenId,
                            NFTTraitList.nftlink,
                            NFTTraitList.totalXRAIN,
-                           NFTTraitList.nftGroupName
+                           NFTTraitList.nftGroupName,
+                           NFTTraitList.taxonId
                     ).filter(
                             NFTTraitList.xrpId == xrpId,
                             NFTTraitList.nftlink != ''
@@ -82,8 +83,8 @@ class BattleRoyaleDB:
             nftOptions = {}
             
             for row in queryResult:
-                tokenId, nftLink, totalXrain, nftGroupName = row
-                entry = {"tokenId": tokenId, 'nftLink': nftLink, 'totalXrain': totalXrain, 'label': f"*{tokenId[-6:]}   | Base power: {totalXrain}"}
+                tokenId, nftLink, totalXrain, nftGroupName, taxonId = row
+                entry = {"tokenId": tokenId, 'nftLink': nftLink, 'totalXrain': totalXrain, 'taxonId': taxonId, 'label': f"*{tokenId[-6:]}   | Base power: {totalXrain}"}
                 if nftGroupName in nftOptions.keys():
                     nftOptions[nftGroupName].append(entry)
                 else:
