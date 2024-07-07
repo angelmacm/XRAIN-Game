@@ -11,6 +11,7 @@ from interactions.api.events import Component
 # Other imports
 from datetime import datetime
 from random import randint
+from asyncio import sleep
 
 intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT
 client = Client(intents=intents, token=botConfig['token'])
@@ -239,6 +240,41 @@ async def getNFT(ctx: InteractionContext):
     embed.set_image(url=nftInfo['nftLink'])
 
     await ctx.send(embed=embed)
+    
+@slash_command(
+        name="br",
+        description="BATTLE IT OUT!!",
+        options=[
+            slash_int_option(
+                description="Waiting time before the game starts",
+                name="wait-time",
+                choices=[
+                    SlashCommandChoice(name="30s", value=30),
+                    SlashCommandChoice(name="1 min", value=60),
+                    SlashCommandChoice(name="2 min", value=120),
+                    SlashCommandChoice(name="3 min", value=180),
+                ],
+                required=True
+            )
+        ])
+
+async def battleRoyale(ctx: InteractionContext):
+    await ctx.defer()
+    
+    embed = Embed(title="XRPL Rainforest Battle Royale!!",
+                      description="The Battle Royale Horn has sounded by XParrots NFT!!\n\nClick the emoji below to follow to the call.",
+                      timestamp=datetime.now())
+
+    embed.set_thumbnail(url="https://th.bing.com/th/id/OIG4.6LlZ5zoyUH.kDvt2fVg2?w=1024&h=1024&rs=1&pid=ImgDetMain")
+
+    embed.set_footer(text=f"Battle in {ctx.args[0]}s")
+
+    battleCall: BaseMessage = await ctx.send(embed=embed)
+    
+    await battleCall.add_reaction(":crossed_swords:")
+    
+    await sleep(ctx.args[0])
+
     
 
 if __name__ == "__main__":
