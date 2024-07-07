@@ -53,11 +53,11 @@ class BattleRoyaleDB:
                     'reserveXrain': reserveXrain,
                     'reserveBoosts': reserveBoosts}
             
-    async def setNFT(self, xrpId, token):
+    async def setNFT(self, xrpId, token, nftLink, xrainPower, taxonId, groupName):
         async with self.asyncSessionMaker() as session:    
             async with session.begin(): 
                 await session.execute(
-                    update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(tokenIdBattleNFT = token)
+                    update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(tokenIdBattleNFT = token, nftlink = nftLink, xrainPower = xrainPower, taxonId = taxonId, nftGroupName = groupName)
                         )
                 loggingInstance.info(f"setNFT({xrpId}, {token}): Success") if self.verbose else None
     
