@@ -213,7 +213,7 @@ async def getNFT(ctx: InteractionContext):
                     value=str(nftInfo['xrainPower']),
                     inline=True)
     embed.add_field(name="Booster Multiplier",
-                    value=f"0.5\nEffective Power:\n{int(nftInfo['xrainPower'])*1.5}",
+                    value=f"100%\nEffective Power:\n{int(nftInfo['xrainPower'])*2}",
                     inline=True)
     embed.add_field(name="Active Booster",
                     value="Yes" if int(nftInfo['reserveBoosts']) > 0 else "No",
@@ -223,6 +223,9 @@ async def getNFT(ctx: InteractionContext):
                     inline=True)
     embed.add_field(name="XRAIN Reserves",
                     value=str(nftInfo['reserveXrain']),
+                    inline=True)
+    embed.add_field(name="Battle Royale Rank",
+                    value= nftInfo['battleRank'],
                     inline=True)
 
     embed.set_image(url=nftInfo['nftLink'])
