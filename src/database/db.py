@@ -70,7 +70,9 @@ class BattleRoyaleDB:
                     ).filter(
                             NFTTraitList.xrpId == xrpId,
                             NFTTraitList.nftlink != ''
-                    )
+                    ).order_by(
+                            NFTTraitList.nftGroupName
+                    ).order_by(NFTTraitList.totalXRAIN.desc())
             queryResult = await session.execute(query)
             queryResult = queryResult.all()
             

@@ -3,3 +3,4 @@ Lib
 Scripts
 *.ini
 *.log
+__pycache__
