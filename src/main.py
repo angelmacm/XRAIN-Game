@@ -209,7 +209,7 @@ async def getNFT(ctx: InteractionContext):
     
     randomColorCode = str(hex(randint(0,16777215)))[2:]
     
-    for _ in range(len(randomColorCode)-6):
+    for _ in range(abs(len(randomColorCode)-6)):
         randomColorCode += '0'
     
     embed = Embed(title=f"Chosen NFT: ***{nftInfo['nftToken'][-6:]}**",
