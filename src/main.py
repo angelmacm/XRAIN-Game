@@ -10,6 +10,7 @@ from interactions.api.events import Component
 
 # Other imports
 from datetime import datetime
+from random import randint
 
 intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT
 client = Client(intents=intents, token=botConfig['token'])
@@ -206,8 +207,15 @@ async def getNFT(ctx: InteractionContext):
     xrpId = ctx.kwargs['xrpid']
     nftInfo = await dbInstance.getNFTInfo(xrpId)
     
-    embed = Embed(title="Current NFT",
-                      description=f"Your chosen NFT is **__[*{nftInfo['nftToken'][-6:]}](https://xrp.cafe/nft/{nftInfo['nftToken']})__**")
+    randomColorCode = str(hex(randint(0,16777215)))[2:]
+    
+    for _ in range(len(randomColorCode)-6):
+        randomColorCode += '0'
+    
+    embed = Embed(title=f"Chosen NFT: ***{nftInfo['nftToken'][-6:]}**",
+                  url=f"https://xrp.cafe/nft/{nftInfo['nftToken']}",
+                  description=f"You've won **__{nftInfo['battleWins']}__** times!",
+                  color=f"#{randomColorCode}")
 
     embed.add_field(name="Base power",
                     value=str(nftInfo['xrainPower']),
