@@ -177,4 +177,11 @@ class BattleRoyaleDB:
                 raise Exception("DiscordIdNotFound")
             
             return queryResult[0]
+        
+    async def setDiscordId(self, discordId, xrpId):
+        async with self.asyncSessionMaker() as session:
+            async with session.begin():
+                await session.execute(
+                    update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(discordId = discordId)
+                        )
             
