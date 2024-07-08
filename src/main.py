@@ -203,7 +203,7 @@ async def buyBoosts(ctx: InteractionContext):
             )
         ])
 async def getNFT(ctx: InteractionContext):
-    await ctx.defer(ephemeral=True)
+    await ctx.defer(ephemeral=False)
     
     xrpId = ctx.kwargs['xrpid']
     nftInfo = await dbInstance.getNFTInfo(xrpId)
