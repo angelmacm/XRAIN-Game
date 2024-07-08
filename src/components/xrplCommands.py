@@ -30,11 +30,11 @@ class XRPClient:
         
         coinIssuer = await self.getCoinIssuer(coinHex) if coinHex.upper() != "XRP" else None
         
-        payment = await self.constructPayment(address= address,
-                                                value= value,
-                                                coinHex= coinHex,
-                                                memos= memos,
-                                                coinIssuer= coinIssuer)
+        payment = self.constructPayment(address= address,
+                                        value= value,
+                                        coinHex= coinHex,
+                                        memos= memos,
+                                        coinIssuer= coinIssuer)
         # Retry logic should there be a network problem
         retries = 3
         for attempt in range(retries):
@@ -116,7 +116,7 @@ class XRPClient:
     def getTestMode(self) -> bool:
         return self.xrpLink == self.config["testnet_link"]
 
-    async def constructPayment(self, address: str, value: float, coinHex: str = "XRP", memos: str | None = None, coinIssuer: str | None = None):
+    def constructPayment(self, address: str, value: float, coinHex: str = "XRP", memos: str | None = None, coinIssuer: str | None = None):
         # Prepare the result format
         funcResult = {'result': False, 'error': None}
         
