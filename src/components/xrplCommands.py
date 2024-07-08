@@ -151,3 +151,51 @@ class XRPClient:
     
     def getTestMode(self) -> bool:
         return self.xrpLink == self.config["testnet_link"]
+
+    async def constructPayment(self, address: str, value: float, coinHex: str = "XRP", memos: str | None = None):
+        # Prepare the result format
+        funcResult = {'result': False, 'error': None}
+        
+         # if memos are given, properly format it.
+        if memos:
+            memoData = memos.encode('utf-8').hex()
+        
+        loggingInstance.info("Preparing payment package...") if self.verbose else None # For debugging purposes
+        try:
+            if coinHex.upper() == "XRP":
+                # Use xrp_to_drops if the currency is XRP
+                amount_drops = xrp_to_drops(float(value))
+                payment = Payment(
+                    account=self.wallet.classic_address,
+                    destination=address,
+                    amount=amount_drops,
+                    memos= [Memo(memo_data=memoData)] if memos else None
+                )
+            else:
+                # Get the coin issuer from the trustline that is set on the sender's account
+                coinIssuer = await self.getCoinIssuer(coinHex)
+                
+                # If the issuer is not available on the sender, return
+                if coinIssuer is None:
+                    funcResult["error"] = "TrustlineNotSetOnSender"
+                    funcResult["result"] = False
+                    return funcResult
+                
+                # Prepare the payment transaction format along with the given fields
+                payment = Payment(
+                    account=self.wallet.classic_address,
+                    destination=address,
+                    amount={
+                        "currency": coinHex,
+                        "value": str(value),  # Ensure amount is a string
+                        "issuer": coinIssuer
+                    },
+                    memos= [Memo(memo_data=memoData)] if memos else None
+                )
+            return payment
+        except Exception as e:
+            loggingInstance.error(f"Error processing {value} {coinHex} for {address}: {str(e)}") if self.verbose else None # For debugging purposes
+            funcResult['result'] = False
+            funcResult['error'] = e
+            return funcResult
+    
