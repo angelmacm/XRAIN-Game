@@ -28,10 +28,13 @@ class XRPClient:
         # Prepare the result format
         funcResult = {'result': False, 'error': None}
         
+        coinIssuer = await self.getCoinIssuer(coinHex) if coinHex.upper() != "XRP" else None
+        
         payment = await self.constructPayment(address= address,
                                                 value= value,
                                                 coinHex= coinHex,
-                                                memos= memos)
+                                                memos= memos,
+                                                coinIssuer= coinIssuer)
         # Retry logic should there be a network problem
         retries = 3
         for attempt in range(retries):
@@ -113,7 +116,7 @@ class XRPClient:
     def getTestMode(self) -> bool:
         return self.xrpLink == self.config["testnet_link"]
 
-    async def constructPayment(self, address: str, value: float, coinHex: str = "XRP", memos: str | None = None):
+    async def constructPayment(self, address: str, value: float, coinHex: str = "XRP", memos: str | None = None, coinIssuer: str | None = None):
         # Prepare the result format
         funcResult = {'result': False, 'error': None}
         
@@ -133,14 +136,6 @@ class XRPClient:
                     memos= [Memo(memo_data=memoData)] if memos else None
                 )
             else:
-                # Get the coin issuer from the trustline that is set on the sender's account
-                coinIssuer = await self.getCoinIssuer(coinHex)
-                
-                # If the issuer is not available on the sender, return
-                if coinIssuer is None:
-                    funcResult["error"] = "TrustlineNotSetOnSender"
-                    funcResult["result"] = False
-                    return funcResult
                 
                 # Prepare the payment transaction format along with the given fields
                 payment = Payment(
