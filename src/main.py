@@ -293,14 +293,17 @@ async def battleRoyale(ctx: InteractionContext):
     await ctx.defer()
     
     embed = Embed(title="XRPL Rainforest Battle Royale!!",
-                      description="The Battle Royale Horn has sounded by XParrots NFT!!\n\nClick the emoji below to follow to the call.",
+                      description="The Battle Royale Horn has sounded by XRPLRainforest Warriors!!\n\nClick the emoji below to follow to the call.",
                       timestamp=datetime.now())
 
-    embed.set_thumbnail(url="https://th.bing.com/th/id/OIG4.6LlZ5zoyUH.kDvt2fVg2?w=1024&h=1024&rs=1&pid=ImgDetMain")
+    file = File('./src/images/XRAIN Battle.png', file_name="xrain_battle.png")
+    # embed.set_thumbnail(url="attachment://xrain_logo.jpg")
+    
+    embed.add_image("attachment://xrain_battle.png")
 
     embed.set_footer(text=f"Battle in {ctx.args[0]}s")
 
-    battleCall: BaseMessage = await ctx.send(embed=embed)
+    battleCall: BaseMessage = await ctx.send(embed=embed, file=file)
     
     await battleCall.add_reaction(":crossed_swords:")
     
