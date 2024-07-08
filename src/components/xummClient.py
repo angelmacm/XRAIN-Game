@@ -32,6 +32,8 @@ class XummClient:
                 "issuer": 'rh3tLHbXwZsp7eciw2Qp8g7bN9RnyGa2pF'
             }
             
+        coinHexText = 'XRAIN' if coinHex.upper() != 'XRP' else 'XRP' 
+        
         paymentRequest = self.xummSdk.payload.create(payload={
             'txjson': txJson,
             'options':{
@@ -40,8 +42,7 @@ class XummClient:
                 'submit': True
             },
             "custom_meta": {
-            "identifier": f"{coinHex} Payment",
-            "instruction": f"Scan to pay {amount} {coinHex}"
+            "instruction": f"Scan to pay {amount} {coinHexText}"
         }
         })
         return paymentRequest
