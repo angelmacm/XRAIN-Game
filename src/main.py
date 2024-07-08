@@ -35,6 +35,35 @@ async def on_ready():
     # Some function to do when the bot is ready
     loggingInstance.info(f"Discord Bot Ready!")
 
+async def xummWaitForCompletion(uuid: str):
+    status = xummInstance.checkStatus(uuid)
+    while status.hex is None:
+        status = xummInstance.checkStatus(uuid)
+        await sleep(1)
+    return status
+
+async def verifyAddress(ctx: InteractionContext):
+    try:
+        await dbInstance.checkDiscordId(discordId=ctx.author.id)
+    except Exception as e:
+        if str(e) != "DiscordIdNotFound":
+            raise e
+        else:
+            signInData = xummInstance.createSignIn()
+            
+            embed = Embed(title='Verify your wallet',
+                          description="Scan the QR Code to verify your wallet",
+                          color="#3052ff")
+            embed.add_image(image=signInData.refs.qr_png)
+
+            await ctx.send(embed=embed)
+            
+            status = await xummWaitForCompletion(signInData.uuid)
+            
+            await dbInstance.setDiscordId(ctx.author.id, status.account)
+
+            
+
 # Dailies Command:
 # Parameters:
 #       XRP ID: [Required] XRP Address where the users hold their NFTs and the receipient of the reward
