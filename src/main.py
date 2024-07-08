@@ -213,7 +213,7 @@ async def getNFT(ctx: InteractionContext):
     for _ in range(abs(len(randomColorCode)-6)):
         randomColorCode += '0'
     
-    embed = Embed(title=f"Chosen NFT: ***{nftInfo['nftToken'][-6:]}**",
+    embed = Embed(title=f"Battle NFT: {nftInfo['nftGroupName']} ***{nftInfo['nftToken'][-6:]}**",
                   url=f"https://xrp.cafe/nft/{nftInfo['nftToken']}",
                   description=f"You've won **__{nftInfo['battleWins']}__** times!",
                   color=f"#{randomColorCode}")

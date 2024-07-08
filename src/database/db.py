@@ -32,7 +32,8 @@ class BattleRoyaleDB:
                         RewardsTable.nftlink,
                         RewardsTable.reserveXRAIN,
                         RewardsTable.reserveBoosts,
-                        RewardsTable.battleWins
+                        RewardsTable.battleWins,
+                        RewardsTable.nftGroupName
                     ).filter(
                         RewardsTable.xrpId == xrpId
                     )
@@ -45,7 +46,7 @@ class BattleRoyaleDB:
             if not sessionResult:
                 raise Exception("xrpIdNotFound")
             
-            tokenId, xrainPower, nftLink, reserveXrain, reserveBoosts, battleWins = sessionResult
+            tokenId, xrainPower, nftLink, reserveXrain, reserveBoosts, battleWins, nftGroupName = sessionResult
             
             if battleWins >= 100:
                 battleRank = "Diamond Xrain King :gem::crown:"
@@ -64,7 +65,8 @@ class BattleRoyaleDB:
                     'reserveXrain': reserveXrain,
                     'reserveBoosts': reserveBoosts,
                     'battleWins': battleWins,
-                    'battleRank': battleRank}
+                    'battleRank': battleRank,
+                    'nftGroupName': nftGroupName}
             
     async def setNFT(self, xrpId, token, nftLink, xrainPower, taxonId, groupName):
         async with self.asyncSessionMaker() as session:    
