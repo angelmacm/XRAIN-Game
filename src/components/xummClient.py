@@ -15,7 +15,7 @@ class XummClient:
     
     def checkStatus(self, uuid):
         status = self.xummSdk.payload.get(uuid)
-        return status.response.to_dict()
+        return status.response
     
     def createXrainPaymentRequest(self, recipient: str, amount: float, coinHex:str = "XRP"):
         txJson = {
