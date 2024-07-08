@@ -165,3 +165,16 @@ class BattleRoyaleDB:
             
             loggingInstance.info(f"addBoost(): {queryResult}") if self.verbose else None
             return queryResult
+        
+    async def checkDiscordId(self, discordId):
+        async with self.asyncSessionMaker() as session:
+            query = select(RewardsTable.discordId, RewardsTable.xrpId)\
+                        .filter(RewardsTable.discordId == discordId)
+            queryResult = await session.execute(query)
+            queryResult = queryResult.first()
+            
+            if queryResult is None:
+                raise Exception("DiscordIdNotFound")
+            
+            return queryResult[0]
+            
