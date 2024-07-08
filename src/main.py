@@ -1,6 +1,7 @@
 from database.db import BattleRoyaleDB
 from components.config import dbConfig, botConfig
 from components.logging import loggingInstance
+from components.xummClient import XummClient
 
 
 from interactions import Intents, Client, listen, InteractionContext # General discord Interactions import
@@ -25,6 +26,7 @@ dbInstance = BattleRoyaleDB(
     verbose=dbConfig.getboolean('verbose')
 )
 
+xummInstance = XummClient()
 
 botVerbosity = botConfig.getboolean('verbose')
 
