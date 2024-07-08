@@ -28,73 +28,34 @@ class XRPClient:
         # Prepare the result format
         funcResult = {'result': False, 'error': None}
         
-        # if memos are given, properly format it.
-        if memos:
-            memoData = memos.encode('utf-8').hex()
-        
-        loggingInstance.info("Preparing payment package...") if self.verbose else None # For debugging purposes
-        try:
-            if coinHex.upper() == "XRP":
-                # Use xrp_to_drops if the currency is XRP
-                amount_drops = xrp_to_drops(float(value))
-                payment = Payment(
-                    account=self.wallet.classic_address,
-                    destination=address,
-                    amount=amount_drops,
-                    memos= [Memo(memo_data=memoData)] if memos else None
-                )
-            else:
-                # Get the coin issuer from the trustline that is set on the sender's account
-                coinIssuer = await self.getCoinIssuer(coinHex)
+        payment = await self.constructPayment(address= address,
+                                                value= value,
+                                                coinHex= coinHex,
+                                                memos= memos)
+        # Retry logic should there be a network problem
+        retries = 3
+        for attempt in range(retries):
+            loggingInstance.info(f"   Attempt #{attempt+1} in sending {value} {coinHex} to {address}") if self.verbose else None # For debugging purposes
+            try:
+                async with AsyncWebsocketClient(self.xrpLink) as client:
+                    
+                    # Autofill, submit and wait the transaction to be validated
+                    result = await submit_and_wait(transaction=payment, client=client, wallet=self.wallet)
                 
-                # If the issuer is not available on the sender, return
-                if coinIssuer is None:
-                    funcResult["error"] = "TrustlineNotSetOnSender"
-                    funcResult["result"] = False
+                if result.is_successful():
+                    loggingInstance.info("Success")  if self.verbose else None # For debugging purposes
+                    funcResult["result"] = True
                     return funcResult
+                else:
+                    raise Exception(result.result)
+            except Exception as e:
                 
-                # Prepare the payment transaction format along with the given fields
-                payment = Payment(
-                    account=self.wallet.classic_address,
-                    destination=address,
-                    amount={
-                        "currency": coinHex,
-                        "value": str(value),  # Ensure amount is a string
-                        "issuer": coinIssuer
-                    },
-                    memos= [Memo(memo_data=memoData)] if memos else None
-                )
-            
-            # Retry logic should there be a network problem
-            retries = 3
-            for attempt in range(retries):
-                loggingInstance.info(f"   Attempt #{attempt+1} in sending {value} {coinHex} to {address}") if self.verbose else None # For debugging purposes
-                try:
-                    async with AsyncWebsocketClient(self.xrpLink) as client:
-                        
-                        # Autofill, submit and wait the transaction to be validated
-                        result = await submit_and_wait(transaction=payment, client=client, wallet=self.wallet)
-                    
-                    if result.is_successful():
-                        loggingInstance.info("Success")  if self.verbose else None # For debugging purposes
-                        funcResult["result"] = True
-                        return funcResult
-                    else:
-                        raise Exception(result.result)
-                except Exception as e:
-                    
-                    if "noCurrent" in str(e) or "overloaded" in str(e):
-                        loggingInstance.info(f"Attempt {attempt + 1} failed: {e}. Retrying...") if self.verbose else None # For debugging purposes
-                        await sleep(5)  # Wait before retrying
-                    else:
-                        raise e
-            return False
-        
-        except Exception as e:
-            loggingInstance.error(f"Error processing {value} {coinHex} for {address}: {str(e)}") if self.verbose else None # For debugging purposes
-            funcResult['result'] = False
-            funcResult['error'] = e
-            return funcResult
+                if "noCurrent" in str(e) or "overloaded" in str(e):
+                    loggingInstance.info(f"Attempt {attempt + 1} failed: {e}. Retrying...") if self.verbose else None # For debugging purposes
+                    await sleep(5)  # Wait before retrying
+                else:
+                    raise e
+        return False
     
     async def getCoinIssuer(self, currency: str) -> str | None:
         
