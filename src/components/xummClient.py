@@ -12,3 +12,7 @@ class XummClient:
             })
          
         return signInInfo
+    
+    def checkStatus(self, uuid):
+        status = self.xummSdk.payload.get(uuid)
+        return status.response.to_dict()
