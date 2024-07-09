@@ -3,16 +3,18 @@ from components.config import dbConfig, botConfig, coinsConfig
 from components.logging import loggingInstance
 from components.xummClient import XummClient
 
+from components.battles import Battle
+from components.players import Players
 
-from interactions import Intents, Client, listen, InteractionContext # General discord Interactions import
-from interactions import slash_command, slash_str_option, slash_int_option # Slash command imports
+from interactions import Intents, Client, listen, InteractionContext, BaseMessage # General discord Interactions import
+from interactions import slash_command, slash_str_option, slash_int_option, File # Slash command imports
 from interactions import Embed, StringSelectMenu, ComponentContext, component_callback, StringSelectOption, SlashCommandChoice
 from interactions.api.events import Component
 
 # Other imports
 from datetime import datetime
 from random import randint
-from asyncio import sleep
+from asyncio import sleep, gather
 
 intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT
 client = Client(intents=intents, token=botConfig['token'])
@@ -305,9 +307,12 @@ async def getNFT(ctx: InteractionContext):
                     SlashCommandChoice(name="3 min", value=180),
                 ],
                 required=True
+            ),
+            slash_str_option(
+                name="players",
+                description="Players splitted by comma"
             )
         ])
-
 async def battleRoyale(ctx: InteractionContext):
     await ctx.defer()
     
@@ -316,7 +321,6 @@ async def battleRoyale(ctx: InteractionContext):
                       timestamp=datetime.now())
 
     file = File('./src/images/XRAIN Battle.png', file_name="xrain_battle.png")
-    # embed.set_thumbnail(url="attachment://xrain_logo.jpg")
     
     embed.add_image("attachment://xrain_battle.png")
 
@@ -327,6 +331,31 @@ async def battleRoyale(ctx: InteractionContext):
     await battleCall.add_reaction(":crossed_swords:")
     
     await sleep(ctx.args[0])
+    
+    # playersJoined = await battleCall.fetch_reaction(':crossed_swords:')
+    playersJoined: list[str] = ctx.kwargs['players'].split(',')
+    
+    print(playersJoined)
+    
+    battleInstance = Battle(dbInstance)
+    
+    async def savePlayers(xrpId):
+        playerInfo = await dbInstance.getNFTInfo(xrpId)
+        playerInstance = Players(xrpId=xrpId,
+                                 wager=0,
+                                 name=f"*{playerInfo['nftToken'][-6:]}",
+                                 discordId=0,
+                                 battleWins=playerInfo['battleWins'],
+                                 tokenId=playerInfo['nftToken'])
+        battleInstance.join(playerInstance)
+       
+    coros = [savePlayers(xrpId) for xrpId in playersJoined]
+    
+    await gather(*coros)
+        
+    print(await battleInstance.battle())
+    
+    await ctx.send("The Battle has commenced!")
 
     
 
