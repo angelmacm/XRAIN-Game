@@ -33,23 +33,67 @@ class Battle:
     def __randomUser(self):
         return self.currentPlayers[randint(0, len(self.currentPlayers)-1)]
     
-    def battle(self) -> list[str]:
+    async def battle(self) -> list[str]:
         # Function that does the battle system
         
         quotesList = []
         
         # List of all current alive players
         self.currentPlayers = [players for players in self.players if players.alive]
+        self.cycledPlayers = []
         
-        playerOne = self.currentPlayers[randint(0, len(self.currentPlayers)-1)]
+        while self.cycledPlayers != self.currentPlayers:
+            
+            # Pick a player
+            playerOne = self.__randomUniqueUser()
+            self.cycledPlayers.append(playerOne)
+            
+            # Roll for quotes
+            quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
+            
+            # If there's no other players available for player 2, force neutral quote category
+            if self.cycledPlayers == self.currentPlayers:
+                while quoteCategory != 'Neutral':
+                    quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
+                    
+            # Replace the player name to the format
+            quoteDescription:str = quoteDescription.replace("$Player1", playerOne.name)
+            
+            match quoteCategory:
+                
+                # Kill the lower wins
+                case "High RANK kill":
+                    playerTwo = self.__randomUniqueUser()
+                    quoteCategory.replace("$Player2",playerTwo.name)
+                    playerToKill = playerOne if playerOne.battleWins < playerTwo.battleWins else playerTwo
+                    playerToKill.kill()
+                    
+                # Kill the lower power
+                case "High XRAIN kill":
+                    playerTwo = self.__randomUniqueUser()
+                    quoteCategory.replace("$Player2",playerTwo.name)
+                    playerToKill = playerOne if playerOne.xrainPower < playerTwo.xrainPower else playerTwo
+                    playerToKill.kill()
+                    
+                # Kill the higher power 
+                case "Low XRAIN kill":
+                    playerTwo = self.__randomUniqueUser()
+                    quoteCategory.replace("$Player2",playerTwo.name)
+                    playerToKill = playerTwo if playerOne.xrainPower < playerTwo.xrainPower else playerOne
+                    playerToKill.kill()
+                
+                # Kill randomly
+                case "Normal Kill":
+                    playerTwo = self.__randomUniqueUser()
+                    quoteCategory.replace("$Player2",playerTwo.name)
+                    playerToKill = playerOne if randint(0,1) else playerTwo
+                    playerToKill.kill()
+                
+                # No one dies
+                case "Neutral":
+                    pass        
         
-        # Roll for quotes
-        
-        # if cases category
-        
-        
-        
-        return quotesList + self.reviveRoll()
+        return quotesList + await self.reviveRoll()
         
     
     async def reviveRoll(self):        
