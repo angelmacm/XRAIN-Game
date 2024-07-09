@@ -1,5 +1,5 @@
 from database.db import BattleRoyaleDB
-from components.config import dbConfig, botConfig
+from components.config import dbConfig, botConfig, coinsConfig
 from components.logging import loggingInstance
 from components.xummClient import XummClient
 
@@ -180,16 +180,35 @@ async def chooseNft(ctx: InteractionContext):
                 required=True
             )
         ])
-async def buyPlays(ctx: InteractionContext):
+async def fillXrainReserves(ctx: InteractionContext):
     await ctx.defer(ephemeral=True)
     xrpId = ctx.kwargs['xrpid']
-    wagerAmount = ctx.kwargs['xrain-amount']
+    fillAmount = ctx.kwargs['xrain-amount']
     
     # XUMM SDK QR CODE GENERATE AND VALIDATE HERE
+    paymentRequest = xummInstance.createXrainPaymentRequest(
+        'ravqmjBaeJ59dw9uyHZhJ4UBXQBfHCeHo',
+        amount= fillAmount,
+        coinHex= coinsConfig['XRAIN']
+    )
     
-    await dbInstance.addXrain(xrpId, wagerAmount)
+    embed = Embed(title=f"Refill {fillAmount} XRAIN to your Battle Royale reserves",
+                  description= f"Pay **__{fillAmount}__** XRAIN to refill your reserves",
+                  color="#3052ff")
     
-    await ctx.send(f"You have successfully filled your XRAIN Reserves for {wagerAmount}")
+    embed.add_image(image=paymentRequest.refs.qr_png)
+    
+    await ctx.send(embed=embed)
+    
+    status = xummInstance.checkStatus(paymentRequest.uuid)
+    while status['hex'] is None:
+        status = xummInstance.checkStatus(paymentRequest.uuid)
+        await sleep(1)
+    
+    await dbInstance.addXrain(xrpId, fillAmount)
+    
+    await ctx.edit(f"Successfully filled {fillAmount} to your reserves", embed={})
+    
     
 @slash_command(
         name="buy-boost",
