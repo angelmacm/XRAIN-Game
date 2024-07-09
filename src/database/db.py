@@ -155,9 +155,9 @@ class BattleRoyaleDB:
                            BattleQuotes.quoteDesc
                     ).order_by(
                             func.random()
-                    )
+                    ).limit(1)
             queryResult = await session.execute(query)
-            queryResult = queryResult.all()
+            queryResult = queryResult.first()
             
             if not queryResult:
                 loggingInstance.info(f"addBoost(): RandomQuoteGetError") if self.verbose else None
