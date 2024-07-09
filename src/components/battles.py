@@ -42,7 +42,7 @@ class Battle:
         self.currentPlayers = [players for players in self.players if players.alive]
         self.cycledPlayers = []
         
-        while self.cycledPlayers != self.currentPlayers:
+        while len(self.cycledPlayers) <= len(self.currentPlayers):
             
             # Pick a player
             playerOne = self.__randomUniqueUser()
@@ -92,6 +92,8 @@ class Battle:
                 # No one dies
                 case "Neutral":
                     pass        
+        
+            quotesList.append(quoteDescription)
         
         return quotesList + await self.reviveRoll()
         
