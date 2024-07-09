@@ -19,6 +19,20 @@ class Battle:
     def getBoostedList(self) -> list:
         return [players.name for players in self.players if players.boosts > 0]
     
+    def __randomUniqueUser(self):
+        
+        uniquePlayer = self.__randomUser()
+        
+        # Reroll if this player has been involved before
+        while uniquePlayer in self.cycledPlayers:
+            uniquePlayer = self.__randomUser()
+            
+        self.cycledPlayers.append(uniquePlayer)
+        return uniquePlayer
+    
+    def __randomUser(self):
+        return self.currentPlayers[randint(0, len(self.currentPlayers)-1)]
+    
     def battle(self) -> list[str]:
         # Function that does the battle system
         
