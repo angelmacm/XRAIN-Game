@@ -64,28 +64,28 @@ class Battle:
                 # Kill the lower wins
                 case "High RANK kill":
                     playerTwo = self.__randomUniqueUser()
-                    quoteCategory.replace("$Player2",playerTwo.name)
+                    quoteDescription = quoteDescription.replace("$Player2",playerTwo.name)
                     playerToKill = playerOne if playerOne.battleWins < playerTwo.battleWins else playerTwo
                     playerToKill.kill()
                     
                 # Kill the lower power
                 case "High XRAIN kill":
                     playerTwo = self.__randomUniqueUser()
-                    quoteCategory.replace("$Player2",playerTwo.name)
+                    quoteDescription = quoteDescription.replace("$Player2",playerTwo.name)
                     playerToKill = playerOne if playerOne.xrainPower < playerTwo.xrainPower else playerTwo
                     playerToKill.kill()
                     
                 # Kill the higher power 
                 case "Low XRAIN kill":
                     playerTwo = self.__randomUniqueUser()
-                    quoteCategory.replace("$Player2",playerTwo.name)
+                    quoteDescription = quoteDescription.replace("$Player2",playerTwo.name)
                     playerToKill = playerTwo if playerOne.xrainPower < playerTwo.xrainPower else playerOne
                     playerToKill.kill()
                 
                 # Kill randomly
                 case "Normal Kill":
                     playerTwo = self.__randomUniqueUser()
-                    quoteCategory.replace("$Player2",playerTwo.name)
+                    quoteDescription = quoteDescription.replace("$Player2",playerTwo.name)
                     playerToKill = playerOne if randint(0,1) else playerTwo
                     playerToKill.kill()
                 
