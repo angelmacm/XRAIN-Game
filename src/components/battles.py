@@ -38,15 +38,18 @@ class Battle:
         return quotesList + self.reviveRoll()
         
     
-    def reviveRoll(self):        
+    async def reviveRoll(self):        
         quotesList = []
         # List of all current dead players that can be revived
         for players in self.players:
             if players.boosts > 0 and not players.alive:
                 # roll function
-                # if revived:
-                    # self.players.append(revived)
-                pass
+                quoteType, quoteDescription = await self.dbInstance.getRandomQuote(revival=True)
+                
+                if quoteType == 'Revival':
+                    players.revive()
+                    quoteDescription: str = quoteDescription.replace("$Player1", players.name)
+                    quotesList.append(quoteDescription)
             else:
                 continue
             
