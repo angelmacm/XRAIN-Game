@@ -149,7 +149,7 @@ class BattleRoyaleDB:
                         )
                 loggingInstance.info(f"addBoost({xrpId}): Success") if self.verbose else None
                 
-    async def getRandomQuote(self):
+    async def getRandomQuote(self, revival: bool = False):
         async with self.asyncSessionMaker() as session:    
             query = select(BattleQuotes.quoteType,
                            BattleQuotes.quoteDesc
@@ -164,6 +164,10 @@ class BattleRoyaleDB:
                 raise Exception("RandomQuoteGetError")
             
             loggingInstance.info(f"addBoost(): {queryResult}") if self.verbose else None
+            
+            if queryResult[0] == 'Revival' and not revival:
+                return await self.getRandomQuote()
+            
             return queryResult
         
     async def checkDiscordId(self, discordId):
