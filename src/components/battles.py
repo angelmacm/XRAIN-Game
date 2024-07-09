@@ -1,10 +1,12 @@
 from components.players import Players
 from random import randint
+from database.db import BattleRoyaleDB 
 
 class Battle:
-    def __init__(self):
+    def __init__(self, dbInstance: BattleRoyaleDB):
         self.players: list[Players] = []
         self.totalWager = 0
+        self.dbInstance = dbInstance
         pass
 
     def join(self, player: Players):
