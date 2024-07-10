@@ -317,7 +317,7 @@ async def battleRoyale(ctx: InteractionContext):
     await ctx.defer()
     
     embed = Embed(title="XRPL Rainforest Battle Royale!!",
-                      description="The Battle Royale Horn has sounded by XRPLRainforest Warriors!!\n\nClick the emoji below to follow to the call.",
+                      description="The Battle Royale Horn has sounded by XRPLRainforest Warriors!!\n\nClick the emoji below to answer the call.",
                       timestamp=datetime.now())
 
     file = File('./src/images/XRAIN Battle.png', file_name="xrain_battle.png")
