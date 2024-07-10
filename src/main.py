@@ -335,28 +335,49 @@ async def battleRoyale(ctx: InteractionContext):
     # playersJoined = await battleCall.fetch_reaction(':crossed_swords:')
     playersJoined: list[str] = ctx.kwargs['players'].split(',')
     
-    print(playersJoined)
-    
     battleInstance = Battle(dbInstance)
     
     async def savePlayers(xrpId):
         playerInfo = await dbInstance.getNFTInfo(xrpId)
         playerInstance = Players(xrpId=xrpId,
                                  wager=0,
-                                 name=f"*{playerInfo['nftToken'][-6:]}",
+                                 name=f"\\*{playerInfo['nftToken'][-6:]}",
                                  discordId=0,
                                  battleWins=playerInfo['battleWins'],
-                                 tokenId=playerInfo['nftToken'])
+                                 tokenId=playerInfo['nftToken'],
+                                 nftLink=playerInfo['nftLink'])
         battleInstance.join(playerInstance)
        
     coros = [savePlayers(xrpId) for xrpId in playersJoined]
     
     await gather(*coros)
         
-    print(await battleInstance.battle())
+    battleResults = await battleInstance.battle()
     
-    await ctx.send("The Battle has commenced!")
-
+    descriptionText = ""
+    
+    for quote in battleResults['quotes']:
+        descriptionText += f"{quote}\n\n"
+        
+    descriptionText += f"**Participants**\n{len(battleInstance.players)}\n**Dead**\n{len(battleInstance.players) - len(battleResults['alive'])}"
+    resultEmbed = Embed(title="ROUND 1",
+                        description=descriptionText, url="https://xparrots.club/")
+    
+    for player in battleResults['alive']:
+        resultEmbed.add_image(player.nftLink)
+    
+    await ctx.send(embed=resultEmbed)
+    
+    if len(battleResults['revived']):
+        revivalEmbed = Embed(url="https://xparrots.club/")
+        revivalQuotes = ""
+        
+        for entry in battleResults['revived']:
+            revivalQuotes += f"{entry['quote']}\n\n"
+            revivalEmbed.add_image(entry['player'].nftLink)
+            
+        revivalEmbed.description = revivalQuotes
+        await ctx.send(embed=revivalEmbed)
     
 
 if __name__ == "__main__":
