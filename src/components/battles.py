@@ -101,15 +101,16 @@ class Battle:
             
         returnBody['quotes'] = quotesList
         returnBody['alive'] = self.getAlivePlayers()
-        returnBody['revive'] = await self.reviveRoll()
+        returnBody['revived']= await self.reviveRoll()
         
         return returnBody
         
     
-    async def reviveRoll(self):        
-        quotesList = []
+    async def reviveRoll(self) -> list[dict]:        
+        returnList = []
         # List of all current dead players that can be revived
         for players in self.players:
+            returnBody = {}
             if players.boosts > 0 and not players.alive:
                 # roll function
                 quoteType, quoteDescription = await self.dbInstance.getRandomQuote(revival=True)
@@ -117,8 +118,10 @@ class Battle:
                 if quoteType == 'Revival':
                     players.revive()
                     quoteDescription: str = quoteDescription.replace("$Player1", players.name)
-                    quotesList.append(quoteDescription)
+                    returnBody['quote'] = quoteDescription
+                    returnBody['player'] = players
+                    returnList.append(returnBody)
             else:
                 continue
             
-        return quotesList
+        return returnList
