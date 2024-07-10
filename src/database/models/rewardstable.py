@@ -21,6 +21,7 @@ class RewardsTable(Base):
     penaltyPercent = Column(Integer)
     penaltyReputationRewards = Column(Integer)
     bonusXrainFlag = Column(Integer)
+    traitXrainFlag = Column(Integer)
     dailyBonusFlagDate = Column(DateTime)
     penaltyTraits3DRewards = Column(Integer)
     reputationFlag = Column(Integer)
