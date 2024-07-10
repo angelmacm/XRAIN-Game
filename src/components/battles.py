@@ -47,17 +47,16 @@ class Battle:
         self.currentPlayers = self.getAlivePlayers()
         self.cycledPlayers = []
         
-        while len(self.cycledPlayers) <= len(self.currentPlayers):
+        while len(self.cycledPlayers) < len(self.currentPlayers):
             
             # Pick a player
             playerOne = self.__randomUniqueUser()
-            self.cycledPlayers.append(playerOne)
             
             # Roll for quotes
             quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
-            
+
             # If there's no other players available for player 2, force neutral quote category
-            if self.cycledPlayers == self.currentPlayers:
+            if len(self.cycledPlayers) == len(self.currentPlayers):
                 while quoteCategory != 'Neutral':
                     quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
                     
