@@ -33,13 +33,18 @@ class Battle:
     def __randomUser(self):
         return self.currentPlayers[randint(0, len(self.currentPlayers)-1)]
     
-    async def battle(self) -> list[str]:
+    def getAlivePlayers(self):
+        return [players for players in self.players if players.alive] 
+    
+    async def battle(self) -> dict:
+        returnBody = {}
+        
         # Function that does the battle system
         
         quotesList = []
         
         # List of all current alive players
-        self.currentPlayers = [players for players in self.players if players.alive]
+        self.currentPlayers = self.getAlivePlayers()
         self.cycledPlayers = []
         
         while len(self.cycledPlayers) <= len(self.currentPlayers):
@@ -94,8 +99,12 @@ class Battle:
                     pass        
         
             quotesList.append(quoteDescription)
+            
+        returnBody['quotes'] = quotesList
+        returnBody['alive'] = self.getAlivePlayers()
+        returnBody['revive'] = await self.reviveRoll()
         
-        return quotesList + await self.reviveRoll()
+        return returnBody
         
     
     async def reviveRoll(self):        
