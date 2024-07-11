@@ -29,6 +29,8 @@ class Battle:
             if alive and not uniquePlayer.alive:
                 continue
                 
+        if uniquePlayer.alive:
+            self.cycledAlive.append(uniquePlayer)
             
         self.cycledPlayers.append(uniquePlayer)
         return uniquePlayer
