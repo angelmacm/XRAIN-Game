@@ -69,7 +69,7 @@ class Battle:
                     if quoteCategory != "Revival":
                         continue
                 else:
-                    print("Max Reroll reached")
+                    self.reviveBan.append(playerOne)
                     continue
 
             else:
