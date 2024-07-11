@@ -14,7 +14,7 @@ from interactions.api.events import Component
 # Other imports
 from datetime import datetime
 from random import randint
-from asyncio import sleep, gather, get_event_loop
+from asyncio import sleep, gather
 from PIL import Image
 import requests
 from io import BytesIO
@@ -399,20 +399,60 @@ async def parseBattleInfo(ctx:InteractionContext, battleResults, roundNumber):
             
         revivalEmbed.description = revivalQuotes
         await ctx.send(embed=revivalEmbed)
+        
+async def fetchImage(url):
+    response = requests.get(url)
+    return Image.open(BytesIO(response.content))
     
-async def create_collage(image_urls):
-    loop = get_event_loop()
-    images = await gather(*[loop.run_in_executor(None, lambda url=url: Image.open(BytesIO(requests.get(url).content)), url) for url in image_urls])
+async def create_collage(nftLinks):
+    possibleEntryPerRow = [1,2,3,4,5]
+    remainderResult = {}
     
-    # Calculate the collage size (assuming all images are the same size)
-    width, height = images[0].size
-    collage_width = width * len(images)
-    collage_height = height
+    for entry in possibleEntryPerRow:
+        currentRemainder = len(nftLinks) % entry
+        
+        # print(f"{currentRemainder} in {remainderResult.keys()}")
+        if currentRemainder in remainderResult.keys():
+            currentEntry = remainderResult[currentRemainder]
+            remainderResult[currentRemainder] = currentEntry if currentEntry > entry else entry
+            
+            # print(f"{remainderResult[currentRemainder]} = {currentEntry} > {entry}")
+            
+            continue
+        
+        remainderResult[currentRemainder] = entry
+        
+    sortedResultKey = list(remainderResult.keys())
+    sortedResultKey.sort()
+    minKey = sortedResultKey[0]
+    maxImagePerRow = remainderResult[minKey]
+    if maxImagePerRow == 1 and not len(nftLinks) == 1:
+        maxImagePerRow = remainderResult[sortedResultKey[1]]
+    # print(remainderResult[minKey], remainderResult)
     
-    collage = Image.new('RGB', (collage_width, collage_height))
+    images = await gather(*[fetchImage(url) for url in nftLinks])
     
-    for i, img in enumerate(images):
-        collage.paste(img, (i * width, 0))
+    # Find the minimum width and height among all images
+    min_width = min(img.width for img in images)
+    min_height = min(img.height for img in images)
+    
+    # Resize all images to the minimum width and height
+    resized_images = [img.resize((min_width, min_height), Image.Resampling.LANCZOS) for img in images]
+    
+    # Calculate the number of rows
+    rows = (len(images) + maxImagePerRow - 1) // maxImagePerRow
+    
+    collage_width = min_width * maxImagePerRow
+    collage_height = min_height * rows
+    
+    collage = Image.new('RGBA', (collage_width, collage_height), (0, 0, 0, 0))
+    
+    for idx, img in enumerate(resized_images):
+        row = idx // maxImagePerRow
+        col = idx % maxImagePerRow
+        x_offset = col * min_width
+        y_offset = row * min_height
+        collage.paste(img, (x_offset, y_offset))
     
     return collage
 
