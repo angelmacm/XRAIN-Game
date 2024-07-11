@@ -100,6 +100,10 @@ class BattleRoyaleDB:
             for row in queryResult:
                 tokenId, nftLink, totalXrain, nftGroupName, taxonId = row
                 entry = {"tokenId": tokenId, 'nftLink': nftLink, 'totalXrain': totalXrain, 'taxonId': taxonId, 'label': f"*{tokenId[-6:]}   | Base power: {totalXrain}"}
+                
+                if not len(nftGroupName):
+                    continue
+                
                 if nftGroupName in nftOptions.keys():
                     nftOptions[nftGroupName].append(entry)
                 else:
