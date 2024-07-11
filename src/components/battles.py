@@ -19,13 +19,16 @@ class Battle:
     def getBoostedList(self) -> list:
         return [players.name for players in self.players if players.boosts > 0]
     
-    def __randomUniqueUser(self, alive = False):
-        
+    # set Alive to true if you only want to return alive players
+    def __randomUniqueUser(self, alive = True):
         uniquePlayer = self.__randomUser(alive)
         
         # Reroll if this player has been involved before
         while uniquePlayer in self.cycledPlayers:
             uniquePlayer = self.__randomUser(alive)
+            if alive and not uniquePlayer.alive:
+                continue
+                
             
         self.cycledPlayers.append(uniquePlayer)
         return uniquePlayer
@@ -59,7 +62,7 @@ class Battle:
         while len(self.cycledPlayers) < len(self.currentPlayers):
             
             # Pick a player
-            playerOne = self.__randomUniqueUser()
+            playerOne = self.__randomUniqueUser(alive=False)
             
             # Roll for quotes
             quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
