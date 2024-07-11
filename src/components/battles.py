@@ -34,10 +34,7 @@ class Battle:
         return uniquePlayer
     
     def __randomUser(self, alive = True):
-        if alive:
-            return self.currentPlayers[randint(0, len(self.currentPlayers)-1)]
-        else:
-            return self.players[randint(0, len(self.currentPlayers)-1)]
+        return self.players[randint(0, len(self.players)-1)]
     
     def getAlivePlayers(self):
         return [players for players in self.players if players.alive] 
