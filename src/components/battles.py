@@ -37,7 +37,13 @@ class Battle:
         return [players for players in self.players if players.alive] 
     
     async def battle(self) -> dict:
-        returnBody = {}
+        returnBody = {'quotes': None,
+                      'alive': None,
+                      'revived': None,
+                      'winner': None,
+                      'deadNum': None,
+                      'participantsNum': None,
+                      'nftLinks': None}
         
         # Function that does the battle system
         
