@@ -20,8 +20,8 @@ class Battle:
         return [players.name for players in self.players if players.boosts > 0]
     
     # set Alive to true if you only want to return alive players
-    def __randomUniqueUser(self, alive = True):
-        uniquePlayer = self.__randomUser(alive)
+    def __randomUniqueUser(self, alive = True) -> Players:
+        uniquePlayer: Players = self.__randomUser()
         
         # Reroll if this player has been involved before
         while uniquePlayer in self.cycledPlayers:
@@ -35,7 +35,7 @@ class Battle:
         self.cycledPlayers.append(uniquePlayer)
         return uniquePlayer
     
-    def __randomUser(self, alive = True):
+    def __randomUser(self) -> Players:
         return self.players[randint(0, len(self.players)-1)]
     
     def getAlivePlayers(self):
