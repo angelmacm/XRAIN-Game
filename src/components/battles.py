@@ -107,6 +107,7 @@ class Battle:
         returnBody['winner'] = remainingAlive[0] if len(remainingAlive) == 1 else None
         returnBody['deadNum'] = len(self.players) - len(remainingAlive)
         returnBody['participantsNum'] = len(self.players)
+        returnBody['nftLinks'] = [player.nftLink for player in remainingAlive]
         
         return returnBody
         
