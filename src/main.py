@@ -344,6 +344,9 @@ async def battleRoyale(ctx: InteractionContext):
     
     async def savePlayers(xrpId):
         playerInfo = await dbInstance.getNFTInfo(xrpId)
+        
+        # Check for xrain for the wager
+            
         playerInstance = Players(xrpId=xrpId,
                                  wager=0,
                                  name=f"\\*{playerInfo['nftToken'][-6:]}",
@@ -403,16 +406,6 @@ async def parseBattleInfo(ctx:InteractionContext, battleResults, roundNumber):
     
         await ctx.send(embed=resultEmbed, file=file)
     
-    if len(battleResults['revived']):
-        revivalEmbed = Embed(url="https://xparrots.club/")
-        revivalQuotes = ""
-        
-        for entry in battleResults['revived']:
-            revivalQuotes += f"{entry['quote']}\n\n"
-            revivalEmbed.add_image(entry['player'].nftLink)
-            
-        revivalEmbed.description = revivalQuotes
-        await ctx.send(embed=revivalEmbed)
         
 async def fetchImage(url):
     response = requests.get(url)
