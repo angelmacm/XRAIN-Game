@@ -7,7 +7,7 @@ class Battle:
         self.players: list[Players] = []
         self.totalWager = 0
         self.dbInstance = dbInstance
-        pass
+        self.reviveBan = []
 
     def join(self, player: Players):
         self.players.append(player)
