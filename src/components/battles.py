@@ -52,7 +52,9 @@ class Battle:
         quotesList = []
         
         # List of players that we interacted with
-        self.cycledPlayers = []
+        self.currentAlive = self.getAlivePlayers()
+        self.cycledAlive = []
+        self.cycledPlayers = self.reviveBan
         
         while len(self.cycledPlayers) < len(self.players):
             
@@ -77,7 +79,7 @@ class Battle:
                 continue
 
             # If there's no other players available for player 2, force neutral quote category, skip if revival
-            if len(self.cycledPlayers) == len(self.players) and quoteCategory != 'Revival':
+            if len(self.cycledAlive) == len(self.currentAlive) and quoteCategory != 'Revival':
                 while quoteCategory != 'Neutral':
                     quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
                     
