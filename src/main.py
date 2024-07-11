@@ -359,8 +359,8 @@ async def battleRoyale(ctx: InteractionContext):
     for quote in battleResults['quotes']:
         descriptionText += f"{quote}\n\n"
         
-    descriptionText += f"**Participants**\n{len(battleInstance.players)}\n**Dead**\n{len(battleInstance.players) - len(battleResults['alive'])}"
-    resultEmbed = Embed(title="ROUND 1",
+    descriptionText += f"**Participants**\n{battleResults['participantsNum']}\n**Dead**\n{battleResults['deadNum']}"
+    resultEmbed = Embed(title=f"ROUND {roundNumber}",
                         description=descriptionText, url="https://xparrots.club/")
     
     for player in battleResults['alive']:
