@@ -340,20 +340,34 @@ async def battleRoyale(ctx: InteractionContext):
     
     battleInstance = Battle(dbInstance)
     
+    boostQuotes = ""
+    
     async def savePlayers(xrpId):
         playerInfo = await dbInstance.getNFTInfo(xrpId)
         playerInstance = Players(xrpId=xrpId,
                                  wager=0,
                                  name=f"\\*{playerInfo['nftToken'][-6:]}",
                                  discordId=0,
+                                 boosts=randint(0,3),
                                  battleWins=playerInfo['battleWins'],
                                  tokenId=playerInfo['nftToken'],
                                  nftLink=playerInfo['nftLink'])
+        
         battleInstance.join(playerInstance)
+        
        
     coros = [savePlayers(xrpId) for xrpId in playersJoined]
     
     await gather(*coros)
+    
+    for player in battleInstance.players:
+        if player.boosts > 0:
+            boostQuotes += f"**\\@{player.name}** is reeking of bloodlust and ready for war\n"
+            await dbInstance.claimBoost(player.xrpId)
+        else:
+            boostQuotes += f"**\\@{player.name}** is ready for the battle\n"
+    
+    await ctx.send(boostQuotes)
         
     battleResults = await battleInstance.battle()
     roundNumber = 1
