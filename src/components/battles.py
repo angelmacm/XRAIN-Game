@@ -72,6 +72,10 @@ class Battle:
             # Roll for quotes
                 quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
 
+            # Sanity check
+            if not playerOne.alive and quoteCategory != "Revival":
+                continue
+
             # If there's no other players available for player 2, force neutral quote category, skip if revival
             if len(self.cycledPlayers) == len(self.players) and quoteCategory != 'Revival':
                 while quoteCategory != 'Neutral':
