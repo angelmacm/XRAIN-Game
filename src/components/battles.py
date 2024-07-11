@@ -105,11 +105,12 @@ class Battle:
         
             quotesList.append(quoteDescription)
             
+        returnBody['revived']= await self.reviveRoll()
+            
         remainingAlive = self.getAlivePlayers()
         
         returnBody['quotes'] = quotesList
         returnBody['alive'] = remainingAlive
-        returnBody['revived']= await self.reviveRoll()
         returnBody['winner'] = remainingAlive[0] if len(remainingAlive) == 1 else None
         returnBody['deadNum'] = len(self.players) - len(remainingAlive)
         returnBody['participantsNum'] = len(self.players)
