@@ -353,6 +353,18 @@ async def battleRoyale(ctx: InteractionContext):
     await gather(*coros)
         
     battleResults = await battleInstance.battle()
+    roundNumber = 1
+    await parseBattleInfo(ctx, battleResults, roundNumber)
+    
+    while battleResults['winner'] is None:
+        roundNumber += 1
+        battleResults = await battleInstance.battle()
+        await parseBattleInfo(ctx, battleResults, roundNumber)
+    
+    await ctx.send(f"Winner is {battleResults['winner'].name}")
+        
+    
+async def parseBattleInfo(ctx, battleResults, roundNumber):
     
     descriptionText = ""
     
