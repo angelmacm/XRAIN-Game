@@ -19,19 +19,22 @@ class Battle:
     def getBoostedList(self) -> list:
         return [players.name for players in self.players if players.boosts > 0]
     
-    def __randomUniqueUser(self):
+    def __randomUniqueUser(self, alive = False):
         
-        uniquePlayer = self.__randomUser()
+        uniquePlayer = self.__randomUser(alive)
         
         # Reroll if this player has been involved before
         while uniquePlayer in self.cycledPlayers:
-            uniquePlayer = self.__randomUser()
+            uniquePlayer = self.__randomUser(alive)
             
         self.cycledPlayers.append(uniquePlayer)
         return uniquePlayer
     
-    def __randomUser(self):
-        return self.currentPlayers[randint(0, len(self.currentPlayers)-1)]
+    def __randomUser(self, alive = True):
+        if alive:
+            return self.currentPlayers[randint(0, len(self.currentPlayers)-1)]
+        else:
+            return self.players[randint(0, len(self.currentPlayers)-1)]
     
     def getAlivePlayers(self):
         return [players for players in self.players if players.alive] 
