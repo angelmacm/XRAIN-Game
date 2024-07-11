@@ -80,33 +80,29 @@ class Battle:
             # Replace the player name to the format
             quoteDescription:str = quoteDescription.replace("$Player1", playerOne.name)
             
+            if quoteCategory not in ['Neutral', "Revival"]:
+                playerTwo = self.__randomUniqueUser()
+                quoteDescription = quoteDescription.replace("$Player2",playerTwo.name)
+            
             match quoteCategory:
                 
                 # Kill the lower wins
                 case "High RANK kill":
-                    playerTwo = self.__randomUniqueUser()
-                    quoteDescription = quoteDescription.replace("$Player2",playerTwo.name)
                     playerToKill = playerOne if playerOne.battleWins < playerTwo.battleWins else playerTwo
                     playerToKill.kill()
                     
                 # Kill the lower power
                 case "High XRAIN kill":
-                    playerTwo = self.__randomUniqueUser()
-                    quoteDescription = quoteDescription.replace("$Player2",playerTwo.name)
                     playerToKill = playerOne if playerOne.xrainPower < playerTwo.xrainPower else playerTwo
                     playerToKill.kill()
                     
                 # Kill the higher power 
                 case "Low XRAIN kill":
-                    playerTwo = self.__randomUniqueUser()
-                    quoteDescription = quoteDescription.replace("$Player2",playerTwo.name)
                     playerToKill = playerTwo if playerOne.xrainPower < playerTwo.xrainPower else playerOne
                     playerToKill.kill()
                 
                 # Kill randomly
                 case "Normal Kill":
-                    playerTwo = self.__randomUniqueUser()
-                    quoteDescription = quoteDescription.replace("$Player2",playerTwo.name)
                     playerToKill = playerOne if randint(0,1) else playerTwo
                     playerToKill.kill()
                 
