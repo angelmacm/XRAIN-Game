@@ -14,7 +14,10 @@ from interactions.api.events import Component
 # Other imports
 from datetime import datetime
 from random import randint
-from asyncio import sleep, gather
+from asyncio import sleep, gather, get_event_loop
+from PIL import Image
+import requests
+from io import BytesIO
 
 intents = Intents.DEFAULT | Intents.MESSAGE_CONTENT
 client = Client(intents=intents, token=botConfig['token'])
@@ -364,7 +367,7 @@ async def battleRoyale(ctx: InteractionContext):
     await ctx.send(f"Winner is {battleResults['winner'].name}")
         
     
-async def parseBattleInfo(ctx, battleResults, roundNumber):
+async def parseBattleInfo(ctx:InteractionContext, battleResults, roundNumber):
     
     descriptionText = ""
     
@@ -375,10 +378,16 @@ async def parseBattleInfo(ctx, battleResults, roundNumber):
     resultEmbed = Embed(title=f"ROUND {roundNumber}",
                         description=descriptionText, url="https://xparrots.club/")
     
-    for player in battleResults['alive']:
-        resultEmbed.add_image(player.nftLink)
+    collage = await create_collage(battleResults['nftLinks'])
     
-    await ctx.send(embed=resultEmbed)
+    with BytesIO() as image_binary:
+        collage.save(image_binary, 'PNG')
+        image_binary.seek(0)
+        
+        file =File(image_binary, file_name="collage.png")
+        resultEmbed.set_image(url="attachment://collage.png")
+    
+        await ctx.send(embed=resultEmbed, file=file)
     
     if len(battleResults['revived']):
         revivalEmbed = Embed(url="https://xparrots.club/")
@@ -391,6 +400,21 @@ async def parseBattleInfo(ctx, battleResults, roundNumber):
         revivalEmbed.description = revivalQuotes
         await ctx.send(embed=revivalEmbed)
     
+async def create_collage(image_urls):
+    loop = get_event_loop()
+    images = await gather(*[loop.run_in_executor(None, lambda url=url: Image.open(BytesIO(requests.get(url).content)), url) for url in image_urls])
+    
+    # Calculate the collage size (assuming all images are the same size)
+    width, height = images[0].size
+    collage_width = width * len(images)
+    collage_height = height
+    
+    collage = Image.new('RGB', (collage_width, collage_height))
+    
+    for i, img in enumerate(images):
+        collage.paste(img, (i * width, 0))
+    
+    return collage
 
 if __name__ == "__main__":
     client.start()
