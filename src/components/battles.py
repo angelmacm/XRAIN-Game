@@ -128,7 +128,7 @@ class Battle:
                 # roll function
                 quoteType, quoteDescription = await self.dbInstance.getRandomQuote(revival=True)
                 
-                if quoteType == 'Revival':
+                if quoteType == 'Revival' and players.reviveNum < 2:
                     players.revive()
                     quoteDescription: str = quoteDescription.replace("$Player1", players.name)
                     returnBody['quote'] = quoteDescription
