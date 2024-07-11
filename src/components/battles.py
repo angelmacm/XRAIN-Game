@@ -42,7 +42,6 @@ class Battle:
     async def battle(self) -> dict:
         returnBody = {'quotes': None,
                       'alive': None,
-                      'revived': None,
                       'winner': None,
                       'deadNum': None,
                       'participantsNum': None,
@@ -56,16 +55,26 @@ class Battle:
         self.currentPlayers = self.getAlivePlayers()
         self.cycledPlayers = []
         
-        while len(self.cycledPlayers) < len(self.currentPlayers):
+        while len(self.cycledPlayers) < len(self.players):
             
             # Pick a player
             playerOne = self.__randomUniqueUser(alive=False)
             
-            # Roll for quotes
-            quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
+            if playerOne.boosts > 0 and not playerOne.alive:
+                if playerOne.reviveNum < 2:
+                    quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote(revival=True)
+                    if quoteCategory != "Revival":
+                        continue
+                else:
+                    print("Max Reroll reached")
+                    continue
 
-            # If there's no other players available for player 2, force neutral quote category
-            if len(self.cycledPlayers) == len(self.currentPlayers):
+            else:
+            # Roll for quotes
+                quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
+
+            # If there's no other players available for player 2, force neutral quote category, skip if revival
+            if len(self.cycledPlayers) == len(self.players) and quoteCategory != 'Revival':
                 while quoteCategory != 'Neutral':
                     quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
                     
@@ -104,11 +113,13 @@ class Battle:
                 
                 # No one dies
                 case "Neutral":
-                    pass        
+                    pass      
+                
+                case "Revival":
+                    playerOne.revive()  
         
             quotesList.append(quoteDescription)
             
-        returnBody['revived']= await self.reviveRoll()
             
         remainingAlive = self.getAlivePlayers()
         
