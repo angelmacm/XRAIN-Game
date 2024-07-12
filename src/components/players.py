@@ -12,9 +12,11 @@ class Players:
         self.xrainPower = xrainPower
         self.kills = 0
         self.nftLink = nftLink
+        self.deaths = 0
     
     def kill(self):
         self.alive = False
+        self.deaths += 1
         
     def revive(self):
         self.alive = True
