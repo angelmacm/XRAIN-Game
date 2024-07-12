@@ -390,7 +390,7 @@ async def battleRoyale(ctx: InteractionContext):
         
         if player.boosts > 0:
             boostQuotes += f"**\\@{player.name}** is reeking of bloodlust and ready for war\n"
-            await dbInstance.claimBoost(player.xrpId)
+            # await dbInstance.claimBoost(player.xrpId)
         else:
             boostQuotes += f"**\\@{player.name}** is ready for the battle\n"
     
