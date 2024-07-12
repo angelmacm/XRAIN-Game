@@ -61,7 +61,6 @@ class Battle:
         quotesList = []
         
         # List of players that we interacted with
-        self.currentAlive = self.getAlivePlayers()
         self.cycledAlive = []
         self.cycledPlayers = []
         
@@ -70,7 +69,8 @@ class Battle:
             # Pick a player
             playerOne = self.__randomUniqueUser(alive=False)
             
-            quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
+            # Roll for quote, include revival quotes if player is not alive
+            quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote(revival=not playerOne.alive)
             
             if playerOne.alive == False:
                 
