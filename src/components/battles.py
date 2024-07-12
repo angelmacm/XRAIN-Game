@@ -57,29 +57,26 @@ class Battle:
         # List of players that we interacted with
         self.currentAlive = self.getAlivePlayers()
         self.cycledAlive = []
-        self.cycledPlayers = self.reviveBan
+        self.cycledPlayers = []
         
         while len(self.cycledPlayers) < len(self.players):
             
             # Pick a player
             playerOne = self.__randomUniqueUser(alive=False)
             
-            if playerOne.boosts > 0 and not playerOne.alive:
-                if playerOne.reviveNum < 2:
-                    quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote(revival=True)
-                    if quoteCategory != "Revival":
-                        continue
-                else:
-                    self.reviveBan.append(playerOne)
+            quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
+            
+            if playerOne.alive == False:
+                
+                if quoteCategory != "Revival":
                     continue
-
-            else:
-            # Roll for quotes
-                quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
-
-            # Sanity check
-            if not playerOne.alive and quoteCategory != "Revival":
-                continue
+                
+                if playerOne.boosts == 0:
+                    continue
+                
+                if playerOne.reviveNum >= 2:
+                    continue
+                
 
             # If there's no other players available for player 2, force neutral quote category, skip if revival
             if len(self.cycledAlive) == len(self.currentAlive) and quoteCategory != 'Revival':
