@@ -396,7 +396,7 @@ async def battleRoyale(ctx: InteractionContext):
     while battleResults['winner'] is None:
         await randomWait()
         
-        await postRoundInfo(ctx.channel, battleResults, roundNumber)
+        await postRoundInfo(ctx.channel, battleResults)
         roundNumber += 1
         await preRoundInfo(channel=ctx.channel,
                            playerList=battleResults['alive'],
