@@ -95,22 +95,18 @@ class Battle:
                 # Kill the lower wins
                 case "High RANK kill":
                     playerToKill = playerOne if playerOne.battleWins < playerTwo.battleWins else playerTwo
-                    playerToKill.kill()
                     
                 # Kill the lower power
                 case "High XRAIN kill":
                     playerToKill = playerOne if playerOne.xrainPower < playerTwo.xrainPower else playerTwo
-                    playerToKill.kill()
                     
                 # Kill the higher power 
                 case "Low XRAIN kill":
                     playerToKill = playerTwo if playerOne.xrainPower < playerTwo.xrainPower else playerOne
-                    playerToKill.kill()
                 
                 # Kill randomly
                 case "Normal Kill":
                     playerToKill = playerOne
-                    playerToKill.kill()
                 
                 # No one dies
                 case "Neutral":
@@ -118,7 +114,11 @@ class Battle:
                 
                 case "Revival":
                     playerOne.revive()  
-        
+
+            if quoteCategory not in ['Neutral', "Revival"]:
+                playerOne.addKill() if playerOne != playerToKill else playerOne.kill()
+                playerTwo.addKill() if playerTwo != playerToKill else playerTwo.kill()
+            
             quotesList.append(quoteDescription)
             
             
