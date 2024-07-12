@@ -8,10 +8,13 @@ class Battle:
         self.totalWager = 0
         self.dbInstance = dbInstance
         self.reviveBan = []
+        self.currentAlive = []
+        self.currentDead = []
 
     def join(self, player: Players):
         self.players.append(player)
         self.totalWager += player.wager
+        self.currentAlive.append(player)
     
     def getNFTList(self) -> list:
         return [players.NFT for players in self.players]
