@@ -422,17 +422,44 @@ async def battleRoyale(ctx: InteractionContext):
         battleResults = await battleInstance.battle()
         await randomWait()
     
+    mostKills, mostDeaths, mostRevives = await prepareStats(battleInstance.players)
+    
     winnerImageEmbed = Embed(title="XRPLRainforest Battle Royale Winner")
-    winnerTextEmbed = Embed(description=f"**{battleResults['winner'].name}**",timestamp=datetime.now())
+    winnerTextEmbed = Embed(description=f"**{battleResults['winner'].name}** has won the battle royale!\n",timestamp=datetime.now())
 
     winnerImageEmbed.set_image(battleResults['winner'].nftLink)
     
-    winnerTextEmbed.set_footer("XRPLRainforest Battle Royale Winner")    
     winnerTextEmbed.add_field(name="Kills",value=f":knife:{battleResults['winner'].kills}", inline=True)
     winnerTextEmbed.add_field(name="Revives",value=f":wing:{battleResults['winner'].reviveNum}", inline=True)
     
-    await ctx.send(embeds=[winnerImageEmbed, winnerTextEmbed])
+    statsEmbed = Embed(title="Battle Royale Stats!")
+    statsEmbed.add_field(name="**Top 3 Kill**", value=mostKills,inline=True)
+    statsEmbed.add_field(name="**Top 3 Deaths**", value=mostDeaths,inline=True)
+    statsEmbed.add_field(name="**Top 3 Revives**", value=mostRevives,inline=True)
+    statsEmbed.set_footer("XRPLRainforest Battle Royale")    
+    
+    
+    await ctx.send(embeds=[winnerImageEmbed, winnerTextEmbed, statsEmbed])
         
+async def prepareStats(players: list[Players]):
+    minRank = gameConfig.getint('stat_best_num')
+    mostKills = sorted(players, key=lambda players: players.kills, reverse=True)
+    killQuotes = ""
+    for player in mostKills[:minRank]:
+        killQuotes += f"{player.name}: {player.kills}\n"
+        
+    mostDeaths = sorted(players, key=lambda players: players.deaths, reverse=True)
+    deathQuotes = ""
+    for player in mostDeaths[:minRank]:
+        deathQuotes += f"{player.name}: {player.deaths}\n"
+    
+    mostRevives = sorted(players, key=lambda players: players.reviveNum, reverse=True)
+    reviveQuotes = ""
+    for player in mostRevives[:minRank]:
+        reviveQuotes += f"{player.name}: {player.reviveNum}\n"
+    
+    return killQuotes, deathQuotes, reviveQuotes
+    
 async def preRoundInfo(channel: InteractionContext.channel,
                        playerList: list[Players],
                        roundNumber:int,
