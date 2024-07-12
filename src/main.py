@@ -398,13 +398,14 @@ async def battleRoyale(ctx: InteractionContext):
             boostQuotes += f"**\\@{player.name}** is ready for the battle\n"
     
     await ctx.send(boostQuotes)
-        
+    roundColor = await randomColor()
     roundNumber = 1
     await preRoundInfo(channel=ctx,
                        playerList=battleInstance.players,
                        roundNumber=roundNumber,
                        participantsNum=len(battleInstance.currentAlive),
-                       deadNum=len(battleInstance.currentDead))
+                       deadNum=len(battleInstance.currentDead),
+                       roundColor = roundColor)
         
     battleResults = await battleInstance.battle()
     
@@ -415,13 +416,15 @@ async def battleRoyale(ctx: InteractionContext):
     while battleResults['winner'] is None:
         await randomWait()
         
-        await postRoundInfo(ctx.channel, battleResults)
+        await postRoundInfo(ctx.channel, battleResults, roundColor = roundColor)
         roundNumber += 1
+        roundColor = await roundColor()
         await preRoundInfo(channel=ctx.channel,
                            playerList=battleResults['alive'],
                            roundNumber=roundNumber,
                            participantsNum=battleResults['participantsNum'],
-                           deadNum=battleResults['deadNum'])
+                           deadNum=battleResults['deadNum'],
+                           roundColor = roundColor)
         battleResults = await battleInstance.battle()
         await randomWait()
     
@@ -469,7 +472,8 @@ async def preRoundInfo(channel: InteractionContext.channel,
                        playerList: list[Players],
                        roundNumber:int,
                        participantsNum:int,
-                       deadNum:int):
+                       deadNum:int,
+                       roundColor: str):
     
     descriptionText = '**Battle has started**\n\nParticipants: '
     nftLinks = []
@@ -478,7 +482,7 @@ async def preRoundInfo(channel: InteractionContext.channel,
        nftLinks.append(player.nftImage)
         
     preRoundEmbed = Embed(title=f"ROUND {roundNumber}",
-                          description=descriptionText, color=await randomColor())
+                          description=descriptionText, color=roundColor)
     
     preRoundEmbed.add_field(name="Participants", value=participantsNum, inline=True)
     preRoundEmbed.add_field(name="Dead", value=deadNum, inline=True)
@@ -494,14 +498,15 @@ async def preRoundInfo(channel: InteractionContext.channel,
     
 
 async def postRoundInfo(channel:InteractionContext.channel,
-                        battleResults):
+                        battleResults,
+                        roundColor):
     
     descriptionText = ""
     
     for quote in battleResults['quotes']:
         descriptionText += f"{quote}\n\n"
         
-    postRoundEmbed = Embed(description=descriptionText, color=await randomColor())
+    postRoundEmbed = Embed(description=descriptionText, color=roundColor)
     
     postRoundEmbed.add_field(name="Participants", value=battleResults['participantsNum'], inline=True)
     postRoundEmbed.add_field(name="Dead", value=battleResults['deadNum'], inline=True)
