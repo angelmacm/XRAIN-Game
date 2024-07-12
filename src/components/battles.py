@@ -45,6 +45,9 @@ class Battle:
     def getAlivePlayers(self):
         return [players for players in self.players if players.alive] 
     
+    def getDeadPlayers(self):
+        return [players for players in self.players if not players.alive] 
+    
     async def battle(self) -> dict:
         returnBody = {'quotes': None,
                       'alive': None,
@@ -125,12 +128,13 @@ class Battle:
             quotesList.append(quoteDescription)
             
             
-        remainingAlive = self.getAlivePlayers()
+        self.currentAlive = remainingAlive = self.getAlivePlayers()
+        self.currentDead = self.getDeadPlayers()
         
         returnBody['quotes'] = quotesList
         returnBody['alive'] = remainingAlive
         returnBody['winner'] = remainingAlive[0] if len(remainingAlive) == 1 else None
-        returnBody['deadNum'] = len(self.players) - len(remainingAlive)
+        returnBody['deadNum'] = len(self.currentDead)
         returnBody['participantsNum'] = len(remainingAlive)
         returnBody['nftLinks'] = [player.nftLink for player in remainingAlive]
         
