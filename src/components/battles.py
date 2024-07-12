@@ -118,14 +118,17 @@ class Battle:
                 
                 # No one dies
                 case "Neutral":
+                    quoteCategory += "| :peace:"
                     pass      
                 
                 case "Revival":
+                    quoteCategory += "| :innocent:"
                     playerOne.revive()  
 
             if quoteCategory not in ['Neutral', "Revival"]:
                 playerOne.addKill() if playerOne != playerToKill else playerOne.kill()
                 playerTwo.addKill() if playerTwo != playerToKill else playerTwo.kill()
+                quoteDescription += "| :skull_crossbones:"
             
             quotesList.append(quoteDescription)
             
