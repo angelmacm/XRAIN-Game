@@ -1,4 +1,5 @@
 from components.players import Players
+from components.config import gameConfig
 from random import randint
 from database.db import BattleRoyaleDB 
 
@@ -10,6 +11,7 @@ class Battle:
         self.reviveBan = []
         self.currentAlive = []
         self.currentDead = []
+        self.verbose = gameConfig.getboolean('verbose')
 
     def join(self, player: Players):
         self.players.append(player)
@@ -80,7 +82,7 @@ class Battle:
                 if playerOne.boosts == 0:
                     continue
                 
-                if playerOne.reviveNum >= 2:
+                if playerOne.reviveNum >= gameConfig.getint('max_revive'):
                     continue
                 
 

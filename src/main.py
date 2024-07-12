@@ -1,5 +1,5 @@
 from database.db import BattleRoyaleDB
-from components.config import dbConfig, botConfig, coinsConfig
+from components.config import dbConfig, botConfig, coinsConfig, gameConfig
 from components.logging import loggingInstance
 from components.xummClient import XummClient
 
@@ -406,7 +406,7 @@ async def battleRoyale(ctx: InteractionContext):
     battleResults = await battleInstance.battle()
     
     async def randomWait():
-        waitTime = max(random() * 2, 0.5)
+        waitTime = max(random() * gameConfig.getfloat('max_wait'), gameConfig.getfloat('min_wait'))
         await sleep(waitTime)
     
     while battleResults['winner'] is None:
