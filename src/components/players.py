@@ -1,5 +1,5 @@
 class Players:
-    def __init__(self, xrpId, wager, name, discordId, battleWins, tokenId, boosts:int = 0, xrainPower:int = 0, nftLink = ""):
+    def __init__(self, xrpId, wager, name, discordId, battleWins, tokenId, boosts:int = 0, xrainPower:int = 0, nftLink = "", taxonId = 0):
         self.xrpId = xrpId
         self.wager = wager
         self.name = name
@@ -13,6 +13,7 @@ class Players:
         self.kills = 0
         self.nftLink = nftLink
         self.deaths = 0
+        self.taxonId = taxonId
     
     def kill(self):
         self.alive = False
