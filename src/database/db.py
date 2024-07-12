@@ -193,3 +193,37 @@ class BattleRoyaleDB:
                     update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(discordId = discordId)
                         )
             
+    async def getClaimQuote(self, taxonId) -> dict:
+        async with self.asyncSessionMaker() as session:
+            # Query the rows of taxonId
+            query = select(ClaimQuotes.taxonId).group_by(ClaimQuotes.taxonId)
+            taxonIdList = await session.execute(query)
+            
+            # Get, parse, and put them into a list
+            taxonIdList = [row[0] for row in taxonIdList.all()]
+            
+            # Retain taxonId if it is in the list, else 0
+            taxonId = taxonId if taxonId in taxonIdList else 0
+            
+            funcResult = {'nftGroupName':None, 'description':None}
+            query = select(
+                        ClaimQuotes.nftGroupName, ClaimQuotes.description
+                    ).filter(
+                        ClaimQuotes.taxonId == taxonId,
+                    ).order_by(
+                        func.random()
+                    ).limit(1)
+            queryResult = await session.execute(query)
+            queryResult = queryResult.first()
+            
+            if not queryResult:
+                loggingInstance.error(f"getClaimQuote({taxonId}): ClaimQuoteError")
+                raise Exception("ClaimQuoteError")
+            
+            nftGroupName, description = queryResult
+            
+            funcResult['description'] = description
+            funcResult['nftGroupName'] = nftGroupName
+            
+            loggingInstance.info(f"getClaimQuote({taxonId}): {description}") if self.verbose else None
+            return funcResult
