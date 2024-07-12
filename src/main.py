@@ -398,7 +398,7 @@ async def battleRoyale(ctx: InteractionContext):
         
         await postRoundInfo(ctx.channel, battleResults, roundNumber)
         roundNumber += 1
-        await preRoundInfo(ctx=ctx.channel,
+        await preRoundInfo(channel=ctx.channel,
                            playerList=battleResults['alive'],
                            roundNumber=roundNumber,
                            participantsNum=battleResults['participantsNum'],
