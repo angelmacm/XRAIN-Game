@@ -8,7 +8,7 @@ from components.players import Players
 
 from interactions import Intents, Client, listen, InteractionContext, BaseMessage # General discord Interactions import
 from interactions import slash_command, slash_str_option, slash_int_option, File # Slash command imports
-from interactions import Embed, StringSelectMenu, ComponentContext, component_callback, StringSelectOption, SlashCommandChoice
+from interactions import Embed, StringSelectMenu, Message, component_callback, StringSelectOption, SlashCommandChoice
 from interactions.api.events import Component
 
 # Other imports
@@ -378,14 +378,24 @@ async def battleRoyale(ctx: InteractionContext):
     
     await ctx.send(boostQuotes)
         
-    battleResults = await battleInstance.battle()
     roundNumber = 1
-    await parseBattleInfo(ctx, battleResults, roundNumber)
+    roundMessage = await preRoundInfo(ctx=ctx,
+                                      playerList=battleInstance.players,
+                                      roundNumber=roundNumber,
+                                      participantsNum=len(battleInstance.currentAlive),
+                                      deadNum=len(battleInstance.currentDead))
+        
+    battleResults = await battleInstance.battle()
     
     while battleResults['winner'] is None:
+        await postRoundInfo(roundMessage, battleResults, roundNumber)
         roundNumber += 1
+        roundMessage = await preRoundInfo(ctx=ctx,
+                                          playerList=battleResults['alive'],
+                                          roundNumber=roundNumber,
+                                          participantsNum=battleResults['participantsNum'],
+                                          deadNum=battleResults['deadNum'])
         battleResults = await battleInstance.battle()
-        await parseBattleInfo(ctx, battleResults, roundNumber)
     
     winnerImageEmbed = Embed(title="XRPLRainforest Battle Royale Winner")
     winnerTextEmbed = Embed(description=f"**{battleResults['winner'].name}**",timestamp=datetime.now())
@@ -398,28 +408,50 @@ async def battleRoyale(ctx: InteractionContext):
     
     await ctx.send(embeds=[winnerImageEmbed, winnerTextEmbed])
         
+async def preRoundInfo(ctx:InteractionContext,
+                       playerList: list[Players],
+                       roundNumber:int,
+                       participantsNum:int,
+                       deadNum:int):
     
-async def parseBattleInfo(ctx:InteractionContext, battleResults, roundNumber):
-    
-    descriptionText = ""
-    
-    for quote in battleResults['quotes']:
-        descriptionText += f"{quote}\n\n"
+    descriptionText = '**Battle has started**\n\nParticipants: '
+    nftLinks = []
+    for player in playerList:
+       descriptionText += f"{escapeMarkdown(player.name)}, "
+       nftLinks.append(player.nftLink)
         
-    descriptionText += f"**Participants**\n{battleResults['participantsNum']}\n**Dead**\n{battleResults['deadNum']}"
-    resultEmbed = Embed(title=f"ROUND {roundNumber}",
-                        description=descriptionText, url="https://xparrots.club/")
+    preRoundEmbed = Embed(title=f"ROUND {roundNumber}")
     
-    collage = await create_collage(battleResults['nftLinks'])
+    preRoundEmbed.add_field(name="Participants", value=participantsNum, inline=True)
+    preRoundEmbed.add_field(name="Dead", value=deadNum, inline=True)
+    collage = await create_collage(nftLinks)
     
     with BytesIO() as image_binary:
         collage.save(image_binary, 'PNG')
         image_binary.seek(0)
         
         file =File(image_binary, file_name="collage.png")
-        resultEmbed.set_image(url="attachment://collage.png")
+        preRoundEmbed.set_image(url="attachment://collage.png")
+        return await ctx.send(embeds=[preRoundEmbed],file=file)
     
-        await ctx.send(embed=resultEmbed, file=file)
+
+async def postRoundInfo(ctx:Message, battleResults, roundNumber):
+    
+    descriptionText = ""
+    
+    for quote in battleResults['quotes']:
+        descriptionText += f"{quote}\n\n"
+        
+    postRoundEmbed = Embed(title=f"ROUND {roundNumber}",
+                        description=descriptionText, url="https://xparrots.club/")
+    
+    postRoundEmbed.add_field(name="Participants", value=battleResults['participantsNum'], inline=True)
+    postRoundEmbed.add_field(name="Dead", value=battleResults['deadNum'], inline=True)
+    
+    embeds = ctx.embeds
+    embeds.append(postRoundEmbed)
+    
+    await ctx.edit(embeds=embeds, attachments=ctx.attachments)
     
         
 async def fetchImage(url):
