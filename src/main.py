@@ -398,7 +398,7 @@ async def battleRoyale(ctx: InteractionContext):
     battleResults = await battleInstance.battle()
     
     async def randomWait():
-        waitTime = max(random() * 3, 1)
+        waitTime = max(random() * 2, 0.5)
         await sleep(waitTime)
     
     while battleResults['winner'] is None:
