@@ -40,6 +40,12 @@ async def on_ready():
     # Some function to do when the bot is ready
     loggingInstance.info(f"Discord Bot Ready!")
 
+def escapeMarkdown(text: str) -> str:
+    escapeChars = ['*', '_', '~', '`']
+    for char in escapeChars:
+        text = text.replace(char, f'\\{char}')
+    return text
+
 async def xummWaitForCompletion(uuid: str):
     status = xummInstance.checkStatus(uuid)
     while status.hex is None:
