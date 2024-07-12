@@ -436,7 +436,7 @@ async def battleRoyale(ctx: InteractionContext):
     winnerTextEmbed.add_field(name="Kills",value=f":knife:{battleResults['winner'].kills}", inline=True)
     winnerTextEmbed.add_field(name="Revives",value=f":wing:{battleResults['winner'].reviveNum}", inline=True)
     
-    statsEmbed = Embed(title="Battle Royale Stats!",timestamp=datetime.now(), color=winnerEmbedColor)
+    statsEmbed = Embed(title="XRPL Rainforest Battle Royale Stats!",timestamp=datetime.now(), color=winnerEmbedColor)
     statsEmbed.add_field(name="**Top 3 Kill**", value=mostKills,inline=True)
     statsEmbed.add_field(name="**Top 3 Deaths**", value=mostDeaths,inline=True)
     statsEmbed.add_field(name="**Top 3 Revives**", value=mostRevives,inline=True)
