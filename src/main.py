@@ -422,7 +422,8 @@ async def preRoundInfo(ctx:InteractionContext,
        descriptionText += f"{player.name}, "
        nftLinks.append(player.nftImage)
         
-    preRoundEmbed = Embed(title=f"ROUND {roundNumber}")
+    preRoundEmbed = Embed(title=f"ROUND {roundNumber}",
+                          description=descriptionText)
     
     preRoundEmbed.add_field(name="Participants", value=participantsNum, inline=True)
     preRoundEmbed.add_field(name="Dead", value=deadNum, inline=True)
