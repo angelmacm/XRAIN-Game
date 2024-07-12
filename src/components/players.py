@@ -22,3 +22,6 @@ class Players:
         
     def addKill(self):
         self.kills += 1
+        
+    def addNFTImage(self, nftImage):
+        self.nftImage = nftImage

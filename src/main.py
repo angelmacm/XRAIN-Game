@@ -362,6 +362,8 @@ async def battleRoyale(ctx: InteractionContext):
                                  tokenId=playerInfo['nftToken'],
                                  nftLink=playerInfo['nftLink'])
         
+        playerInstance.addNFTImage(await fetchImage(playerInstance.nftLink))
+        
         battleInstance.join(playerInstance)
         
        
