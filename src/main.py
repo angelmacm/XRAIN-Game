@@ -8,7 +8,7 @@ from components.players import Players
 
 from interactions import Intents, Client, listen, InteractionContext, BaseMessage # General discord Interactions import
 from interactions import slash_command, slash_str_option, slash_int_option, File # Slash command imports
-from interactions import Embed, StringSelectMenu, Message, component_callback, StringSelectOption, SlashCommandChoice
+from interactions import Embed, StringSelectMenu, StringSelectOption, SlashCommandChoice
 from interactions.api.events import Component
 
 # Other imports
@@ -391,19 +391,18 @@ async def battleRoyale(ctx: InteractionContext):
     
     async def randomWait():
         waitTime = max(random() * 3, 1)
-        print(f"waitin for {waitTime}")
         await sleep(waitTime)
     
     while battleResults['winner'] is None:
         await randomWait()
         
-        await postRoundInfo(roundMessage, battleResults, roundNumber)
+        await postRoundInfo(ctx.channel, battleResults, roundNumber)
         roundNumber += 1
-        roundMessage = await preRoundInfo(ctx=ctx,
-                                          playerList=battleResults['alive'],
-                                          roundNumber=roundNumber,
-                                          participantsNum=battleResults['participantsNum'],
-                                          deadNum=battleResults['deadNum'])
+        await preRoundInfo(ctx=ctx.channel,
+                           playerList=battleResults['alive'],
+                           roundNumber=roundNumber,
+                           participantsNum=battleResults['participantsNum'],
+                           deadNum=battleResults['deadNum'])
         battleResults = await battleInstance.battle()
         await randomWait()
     
@@ -418,7 +417,7 @@ async def battleRoyale(ctx: InteractionContext):
     
     await ctx.send(embeds=[winnerImageEmbed, winnerTextEmbed])
         
-async def preRoundInfo(ctx:InteractionContext,
+async def preRoundInfo(channel: InteractionContext.channel,
                        playerList: list[Players],
                        roundNumber:int,
                        participantsNum:int,
@@ -443,26 +442,23 @@ async def preRoundInfo(ctx:InteractionContext,
         
         file =File(image_binary, file_name="collage.png")
         preRoundEmbed.set_image(url="attachment://collage.png")
-        return await ctx.send(embeds=[preRoundEmbed],file=file)
+        return await channel.send(embeds=[preRoundEmbed],file=file)
     
 
-async def postRoundInfo(ctx:Message, battleResults, roundNumber):
+async def postRoundInfo(channel:InteractionContext.channel,
+                        battleResults):
     
     descriptionText = ""
     
     for quote in battleResults['quotes']:
         descriptionText += f"{quote}\n\n"
         
-    postRoundEmbed = Embed(title=f"ROUND {roundNumber}",
-                        description=descriptionText, url="https://xparrots.club/")
+    postRoundEmbed = Embed(description=descriptionText)
     
     postRoundEmbed.add_field(name="Participants", value=battleResults['participantsNum'], inline=True)
     postRoundEmbed.add_field(name="Dead", value=battleResults['deadNum'], inline=True)
     
-    embeds = ctx.embeds
-    embeds.append(postRoundEmbed)
-    
-    await ctx.edit(embeds=embeds, attachments=ctx.attachments)
+    await channel.send(embed=postRoundEmbed)
     
         
 async def fetchImage(url):
