@@ -348,8 +348,13 @@ async def battleRoyale(ctx: InteractionContext):
     
     boostQuotes = ""
     
-    async def savePlayers(xrpId):
-        playerInfo = await dbInstance.getNFTInfo(xrpId)
+    async def savePlayers(xrpId, ctx: InteractionContext.channel):
+        try:
+            playerInfo = await dbInstance.getNFTInfo(xrpId)
+        except:
+            await ctx.send(f"r**{xrpId[-6:]}, not found. Please verify your wallet")
+            return None
+            
         
         # Check for xrain for the wager
             
@@ -367,11 +372,14 @@ async def battleRoyale(ctx: InteractionContext):
         battleInstance.join(playerInstance)
         
        
-    coros = [savePlayers(xrpId) for xrpId in playersJoined]
+    coros = [savePlayers(xrpId, ctx.channel) for xrpId in playersJoined]
     
     await gather(*coros)
     
     for player in battleInstance.players:
+        if player is None:
+            continue 
+        
         if player.boosts > 0:
             boostQuotes += f"**\\@{player.name}** is reeking of bloodlust and ready for war\n"
             await dbInstance.claimBoost(player.xrpId)
