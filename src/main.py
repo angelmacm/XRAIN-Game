@@ -335,7 +335,7 @@ async def getNFT(ctx: InteractionContext):
         ])
 async def battleRoyale(ctx: InteractionContext):
     await ctx.defer()
-    
+    loggingInstance.info(f"/br called by {ctx.author.display_name}") if botVerbosity else None
     embed = Embed(title="XRPL Rainforest Battle Royale!!",
                       description="The Battle Royale Horn has sounded by XRPLRainforest Warriors!!\n\nClick the emoji below to answer the call.",
                       timestamp=datetime.now())
@@ -444,6 +444,7 @@ async def battleRoyale(ctx: InteractionContext):
     
     
     await ctx.send(embeds=[winnerImageEmbed, winnerTextEmbed, statsEmbed])
+    loggingInstance.info(f"/br done") if botVerbosity else None
         
 async def prepareStats(players: list[Players]):
     minRank = gameConfig.getint('stat_best_num')
