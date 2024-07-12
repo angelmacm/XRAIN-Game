@@ -109,7 +109,7 @@ class Battle:
                 
                 # Kill randomly
                 case "Normal Kill":
-                    playerToKill = playerOne if randint(0,1) else playerTwo
+                    playerToKill = playerOne
                     playerToKill.kill()
                 
                 # No one dies
