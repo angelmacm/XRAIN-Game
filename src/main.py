@@ -478,7 +478,7 @@ async def preRoundInfo(channel: InteractionContext.channel,
        nftLinks.append(player.nftImage)
         
     preRoundEmbed = Embed(title=f"ROUND {roundNumber}",
-                          description=descriptionText)
+                          description=descriptionText, color=await randomColor())
     
     preRoundEmbed.add_field(name="Participants", value=participantsNum, inline=True)
     preRoundEmbed.add_field(name="Dead", value=deadNum, inline=True)
@@ -490,7 +490,7 @@ async def preRoundInfo(channel: InteractionContext.channel,
         
         file =File(image_binary, file_name="collage.png")
         preRoundEmbed.set_image(url="attachment://collage.png")
-        return await channel.send(embeds=[preRoundEmbed],file=file, color=await randomColor())
+        return await channel.send(embeds=[preRoundEmbed],file=file)
     
 
 async def postRoundInfo(channel:InteractionContext.channel,
@@ -501,12 +501,12 @@ async def postRoundInfo(channel:InteractionContext.channel,
     for quote in battleResults['quotes']:
         descriptionText += f"{quote}\n\n"
         
-    postRoundEmbed = Embed(description=descriptionText)
+    postRoundEmbed = Embed(description=descriptionText, color=await randomColor())
     
     postRoundEmbed.add_field(name="Participants", value=battleResults['participantsNum'], inline=True)
     postRoundEmbed.add_field(name="Dead", value=battleResults['deadNum'], inline=True)
     
-    await channel.send(embed=postRoundEmbed, color=await randomColor())
+    await channel.send(embed=postRoundEmbed )
     
         
 async def fetchImage(url):
