@@ -91,7 +91,11 @@ async def verifyAddress(ctx: InteractionContext):
 async def chooseNft(ctx: InteractionContext):
     await ctx.defer(ephemeral=True, suppress_error=True) # Defer the response to wait for the function to run.
     loggingInstance.info(f"/choose-nft called by {ctx.author.display_name}")
-    nftOptions = await dbInstance.getNFTOption(ctx.args[0])
+    try:
+        nftOptions = await dbInstance.getNFTOption(ctx.args[0])
+    except:
+        ctx.send("xrpIdNotFound")
+        return
     
     nftMenu = StringSelectMenu(
         list(nftOptions.keys()),
@@ -267,7 +271,11 @@ async def getNFT(ctx: InteractionContext):
     await ctx.defer(ephemeral=False)
     
     xrpId = ctx.kwargs['xrpid']
-    nftInfo = await dbInstance.getNFTInfo(xrpId)
+    try:
+        nftInfo = await dbInstance.getNFTInfo(xrpId)
+    except:
+        ctx.send("xrpIdNotFound")
+        return
     
     randomColorCode = str(hex(randint(0,16777215)))[2:]
     
