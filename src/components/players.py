@@ -19,3 +19,6 @@ class Players:
     def revive(self):
         self.alive = True
         self.reviveNum += 1
+        
+    def addKill(self):
+        self.kills += 1
