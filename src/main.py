@@ -418,7 +418,7 @@ async def battleRoyale(ctx: InteractionContext):
         
         await postRoundInfo(ctx.channel, battleResults, roundColor = roundColor)
         roundNumber += 1
-        roundColor = await roundColor()
+        roundColor = await randomColor()
         await preRoundInfo(channel=ctx.channel,
                            playerList=battleResults['alive'],
                            roundNumber=roundNumber,
