@@ -355,7 +355,7 @@ async def battleRoyale(ctx: InteractionContext):
             
         playerInstance = Players(xrpId=xrpId,
                                  wager=0,
-                                 name=f"\\*{playerInfo['nftToken'][-6:]}",
+                                 name=escapeMarkdown(f"*{playerInfo['nftToken'][-6:]}"),
                                  discordId=0,
                                  boosts=randint(0,3),
                                  battleWins=playerInfo['battleWins'],
@@ -419,8 +419,8 @@ async def preRoundInfo(ctx:InteractionContext,
     descriptionText = '**Battle has started**\n\nParticipants: '
     nftLinks = []
     for player in playerList:
-       descriptionText += f"{escapeMarkdown(player.name)}, "
-       nftLinks.append(player.nftLink)
+       descriptionText += f"{player.name}, "
+       nftLinks.append(player.nftImage)
         
     preRoundEmbed = Embed(title=f"ROUND {roundNumber}")
     
