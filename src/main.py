@@ -53,6 +53,14 @@ async def xummWaitForCompletion(uuid: str):
         await sleep(1)
     return status
 
+async def randomColor():
+    randomColorCode = str(hex(randint(0,16777215)))[2:]
+    
+    for _ in range(abs(len(randomColorCode)-6)):
+        randomColorCode += '0'
+    
+    return f"#{randomColorCode}"
+
 async def verifyAddress(ctx: InteractionContext):
     try:
         await dbInstance.checkDiscordId(discordId=ctx.author.id)
@@ -277,15 +285,10 @@ async def getNFT(ctx: InteractionContext):
         ctx.send("xrpIdNotFound")
         return
     
-    randomColorCode = str(hex(randint(0,16777215)))[2:]
-    
-    for _ in range(abs(len(randomColorCode)-6)):
-        randomColorCode += '0'
-    
     embed = Embed(title=f"Battle NFT: {nftInfo['nftGroupName']} ***{nftInfo['nftToken'][-6:]}**",
                   url=f"https://xrp.cafe/nft/{nftInfo['nftToken']}",
                   description=f"You've won **__{nftInfo['battleWins']}__** times!",
-                  color=f"#{randomColorCode}")
+                  color=await randomColor())
 
     embed.add_field(name="XRAIN power",
                     value=str(nftInfo['xrainPower']),
@@ -424,15 +427,16 @@ async def battleRoyale(ctx: InteractionContext):
     
     mostKills, mostDeaths, mostRevives = await prepareStats(battleInstance.players)
     
-    winnerImageEmbed = Embed(title="XRPLRainforest Battle Royale Winner")
-    winnerTextEmbed = Embed(description=f"**{battleResults['winner'].name}** has won the battle royale!\n",timestamp=datetime.now())
-
-    winnerImageEmbed.set_image(battleResults['winner'].nftLink)
+    winnerEmbedColor = await randomColor()
     
+    winnerImageEmbed = Embed(title="XRPLRainforest Battle Royale Winner", color=winnerEmbedColor)
+    winnerImageEmbed.set_image(battleResults['winner'].nftLink)
+
+    winnerTextEmbed = Embed(description=f"**{battleResults['winner'].name}** has won the battle royale!\n", color=winnerEmbedColor)
     winnerTextEmbed.add_field(name="Kills",value=f":knife:{battleResults['winner'].kills}", inline=True)
     winnerTextEmbed.add_field(name="Revives",value=f":wing:{battleResults['winner'].reviveNum}", inline=True)
     
-    statsEmbed = Embed(title="Battle Royale Stats!")
+    statsEmbed = Embed(title="Battle Royale Stats!",timestamp=datetime.now(), color=winnerEmbedColor)
     statsEmbed.add_field(name="**Top 3 Kill**", value=mostKills,inline=True)
     statsEmbed.add_field(name="**Top 3 Deaths**", value=mostDeaths,inline=True)
     statsEmbed.add_field(name="**Top 3 Revives**", value=mostRevives,inline=True)
@@ -485,7 +489,7 @@ async def preRoundInfo(channel: InteractionContext.channel,
         
         file =File(image_binary, file_name="collage.png")
         preRoundEmbed.set_image(url="attachment://collage.png")
-        return await channel.send(embeds=[preRoundEmbed],file=file)
+        return await channel.send(embeds=[preRoundEmbed],file=file, color=await randomColor())
     
 
 async def postRoundInfo(channel:InteractionContext.channel,
@@ -501,7 +505,7 @@ async def postRoundInfo(channel:InteractionContext.channel,
     postRoundEmbed.add_field(name="Participants", value=battleResults['participantsNum'], inline=True)
     postRoundEmbed.add_field(name="Dead", value=battleResults['deadNum'], inline=True)
     
-    await channel.send(embed=postRoundEmbed)
+    await channel.send(embed=postRoundEmbed, color=await randomColor())
     
         
 async def fetchImage(url):
