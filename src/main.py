@@ -13,7 +13,7 @@ from interactions.api.events import Component
 
 # Other imports
 from datetime import datetime
-from random import randint
+from random import randint, random
 from asyncio import sleep, gather
 from PIL import Image
 import requests
@@ -389,7 +389,14 @@ async def battleRoyale(ctx: InteractionContext):
         
     battleResults = await battleInstance.battle()
     
+    async def randomWait():
+        waitTime = max(random() * 3, 1)
+        print(f"waitin for {waitTime}")
+        await sleep(waitTime)
+    
     while battleResults['winner'] is None:
+        await randomWait()
+        
         await postRoundInfo(roundMessage, battleResults, roundNumber)
         roundNumber += 1
         roundMessage = await preRoundInfo(ctx=ctx,
@@ -398,6 +405,7 @@ async def battleRoyale(ctx: InteractionContext):
                                           participantsNum=battleResults['participantsNum'],
                                           deadNum=battleResults['deadNum'])
         battleResults = await battleInstance.battle()
+        await randomWait()
     
     winnerImageEmbed = Embed(title="XRPLRainforest Battle Royale Winner")
     winnerTextEmbed = Embed(description=f"**{battleResults['winner'].name}**",timestamp=datetime.now())
