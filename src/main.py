@@ -381,11 +381,11 @@ async def battleRoyale(ctx: InteractionContext):
     await ctx.send(boostQuotes)
         
     roundNumber = 1
-    roundMessage = await preRoundInfo(ctx=ctx,
-                                      playerList=battleInstance.players,
-                                      roundNumber=roundNumber,
-                                      participantsNum=len(battleInstance.currentAlive),
-                                      deadNum=len(battleInstance.currentDead))
+    await preRoundInfo(channel=ctx,
+                       playerList=battleInstance.players,
+                       roundNumber=roundNumber,
+                       participantsNum=len(battleInstance.currentAlive),
+                       deadNum=len(battleInstance.currentDead))
         
     battleResults = await battleInstance.battle()
     
