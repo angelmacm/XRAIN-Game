@@ -460,12 +460,12 @@ async def fetchImage(url):
     response = requests.get(url)
     return Image.open(BytesIO(response.content))
     
-async def create_collage(nftLinks):
+async def create_collage(images):
     possibleEntryPerRow = [1,2,3,4,5]
     remainderResult = {}
     
     for entry in possibleEntryPerRow:
-        currentRemainder = len(nftLinks) % entry
+        currentRemainder = len(images) % entry
         
         # print(f"{currentRemainder} in {remainderResult.keys()}")
         if currentRemainder in remainderResult.keys():
@@ -482,11 +482,9 @@ async def create_collage(nftLinks):
     sortedResultKey.sort()
     minKey = sortedResultKey[0]
     maxImagePerRow = remainderResult[minKey]
-    if maxImagePerRow == 1 and not len(nftLinks) == 1:
+    if maxImagePerRow == 1 and not len(images) == 1:
         maxImagePerRow = remainderResult[sortedResultKey[1]]
     # print(remainderResult[minKey], remainderResult)
-    
-    images = await gather(*[fetchImage(url) for url in nftLinks])
     
     # Find the minimum width and height among all images
     min_width = min(img.width for img in images)
