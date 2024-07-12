@@ -118,11 +118,11 @@ class Battle:
                 
                 # No one dies
                 case "Neutral":
-                    quoteCategory += "| :peace:"
+                    quoteDescription += "| :peace:"
                     pass      
                 
                 case "Revival":
-                    quoteCategory += "| :innocent:"
+                    quoteDescription += "| :innocent:"
                     playerOne.revive()  
 
             if quoteCategory not in ['Neutral', "Revival"]:
