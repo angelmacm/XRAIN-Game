@@ -376,7 +376,8 @@ async def battleRoyale(ctx: InteractionContext):
                                  boosts=randint(0,3),
                                  battleWins=playerInfo['battleWins'],
                                  tokenId=playerInfo['nftToken'],
-                                 nftLink=playerInfo['nftLink'])
+                                 nftLink=playerInfo['nftLink'],
+                                 taxonId=playerInfo['taxonId'])
         
         playerInstance.addNFTImage(await fetchImage(playerInstance.nftLink))
         
@@ -439,6 +440,9 @@ async def battleRoyale(ctx: InteractionContext):
     winnerTextEmbed.add_field(name="Kills",value=f":knife:{battleResults['winner'].kills}", inline=True)
     winnerTextEmbed.add_field(name="Revives",value=f":wing:{battleResults['winner'].reviveNum}", inline=True)
     
+    claimDescription = await dbInstance.getClaimQuote(battleResults['winner'].taxonId)
+    claimEmbed = Embed(description=f"**{claimDescription['description']}**", color=winnerEmbedColor)
+    
     statsEmbed = Embed(title="XRPL Rainforest Battle Royale Stats!",timestamp=datetime.now(), color=winnerEmbedColor)
     statsEmbed.add_field(name="**Top 3 Kill**", value=mostKills,inline=True)
     statsEmbed.add_field(name="**Top 3 Deaths**", value=mostDeaths,inline=True)
@@ -446,7 +450,7 @@ async def battleRoyale(ctx: InteractionContext):
     statsEmbed.set_footer("XRPLRainforest Battle Royale")    
     
     
-    await ctx.send(embeds=[winnerImageEmbed, winnerTextEmbed, statsEmbed])
+    await ctx.send(embeds=[winnerImageEmbed, claimEmbed, winnerTextEmbed, statsEmbed])
     loggingInstance.info(f"/br done") if botVerbosity else None
         
 async def prepareStats(players: list[Players]):
