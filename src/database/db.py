@@ -1,4 +1,4 @@
-from database.models import BattleQuotes, NFTTraitList, RewardsTable
+from database.models import BattleQuotes, NFTTraitList, RewardsTable, ClaimQuotes
 from components.config import dbConfig
 from components.logging import loggingInstance
 
