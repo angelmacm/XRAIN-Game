@@ -381,7 +381,16 @@ async def battleRoyale(ctx: InteractionContext):
         battleResults = await battleInstance.battle()
         await parseBattleInfo(ctx, battleResults, roundNumber)
     
-    await ctx.send(f"Winner is {battleResults['winner'].name}")
+    winnerImageEmbed = Embed(title="XRPLRainforest Battle Royale Winner")
+    winnerTextEmbed = Embed(description=f"**{battleResults['winner'].name}**",timestamp=datetime.now())
+
+    winnerImageEmbed.set_image(battleResults['winner'].nftLink)
+    
+    winnerTextEmbed.set_footer("XRPLRainforest Battle Royale Winner")    
+    winnerTextEmbed.add_field(name="Kills",value=f":knife:{battleResults['winner'].kills}", inline=True)
+    winnerTextEmbed.add_field(name="Revives",value=f":wing:{battleResults['winner'].reviveNum}", inline=True)
+    
+    await ctx.send(embeds=[winnerImageEmbed, winnerTextEmbed])
         
     
 async def parseBattleInfo(ctx:InteractionContext, battleResults, roundNumber):
