@@ -352,8 +352,8 @@ async def battleRoyale(ctx: InteractionContext):
     
     await sleep(ctx.args[0])
     
-    # playersJoined = await battleCall.fetch_reaction(':crossed_swords:')
-    playersJoined: list[str] = ctx.kwargs['players'].split(',')
+    playersReactor = await battleCall.fetch_reaction(':crossed_swords:')
+    playersJoined = [users.id for users in playersReactor if users.id != client.app.id]
     
     battleInstance = Battle(dbInstance)
     
