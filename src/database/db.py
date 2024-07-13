@@ -186,7 +186,7 @@ class BattleRoyaleDB:
             if queryResult is None:
                 raise Exception("DiscordIdNotFound")
             
-            return queryResult[0]
+            return queryResult[1]
         
     async def setDiscordId(self, discordId, xrpId):
         async with self.asyncSessionMaker() as session:
