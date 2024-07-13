@@ -3,7 +3,7 @@ from components.config import dbConfig
 from components.logging import loggingInstance
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy import update
+from sqlalchemy import update, or_
 from sqlalchemy.sql import func
 from datetime import timedelta, datetime
 from sqlalchemy.future import select
@@ -23,7 +23,7 @@ class BattleRoyaleDB:
                                                     expire_on_commit=False)
         self.verbose = verbose
         
-    async def getNFTInfo(self, xrpId):
+    async def getNFTInfo(self, uniqueId):
         async with self.asyncSessionMaker() as session: 
             
             query = select(
@@ -36,13 +36,16 @@ class BattleRoyaleDB:
                         RewardsTable.nftGroupName,
                         RewardsTable.taxonId
                     ).filter(
-                        RewardsTable.xrpId == xrpId
+                        or_(
+                            RewardsTable.xrpId == uniqueId,
+                            RewardsTable.discordId == uniqueId
+                        )
                     )
                     
             sessionResult = await session.execute(query)
             sessionResult = sessionResult.first()
             
-            loggingInstance.info(f"getNFTInfo({xrpId}): {sessionResult}") if self.verbose else None
+            loggingInstance.info(f"getNFTInfo({uniqueId}): {sessionResult}") if self.verbose else None
 
             if not sessionResult:
                 raise Exception("xrpIdNotFound")
