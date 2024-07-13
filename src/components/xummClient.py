@@ -37,7 +37,7 @@ class XummClient:
         paymentRequest = self.xummSdk.payload.create(payload={
             'txjson': txJson,
             'options':{
-                "force_network": "TESTNET",
+                "force_network": "MAINNET",
                 "expire": 30,
                 'submit': True
             },
