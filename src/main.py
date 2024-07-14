@@ -9,7 +9,7 @@ from components.players import Players
 
 from interactions import Intents, Client, listen, InteractionContext, BaseMessage # General discord Interactions import
 from interactions import slash_command, slash_str_option, slash_int_option, File # Slash command imports
-from interactions import Embed, StringSelectMenu, StringSelectOption, SlashCommandChoice, User
+from interactions import Embed, StringSelectMenu, StringSelectOption, SlashCommandChoice, User, slash_bool_option
 from interactions.api.events import Component
 
 # Other imports
