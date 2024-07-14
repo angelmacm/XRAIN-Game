@@ -522,7 +522,7 @@ async def battleRoyale(ctx: InteractionContext):
     
     while battleResults['winner'] is None:
         await randomWait()
-        loggingInstance.info(f"[Round {roundNumber}]: {battleResults['participantsNum']/len(battleInstance.players)} alive") if botVerbosity else None
+        loggingInstance.info(f"[Round {roundNumber}]: {battleResults['participantsNum']}/{len(battleInstance.players)} alive") if botVerbosity else None
         await postRoundInfo(ctx.channel, battleResults, roundColor = roundColor)
         roundNumber += 1
         roundColor = await randomColor()
@@ -565,12 +565,13 @@ async def battleRoyale(ctx: InteractionContext):
     
     loggingInstance.info(f"Winner: {battleResults['winner'].mention if not battleResults['winner'].npc else "NPC"}") if botVerbosity else None
     
-    loggingInstance.info(f"Sending {battleInstance.totalWager} XRAIN to {battleResults['winner'].xrpId}") if botVerbosity else None
-    await xrplInstance.registerSeed(xrplConfig['seed'])
-    await xrplInstance.sendCoin(address=battleResults['winner'].xrpId,
-                                value=battleInstance.totalWager,
-                                coinHex=coinsConfig['XRAIN'],
-                                memos="XRPL Rainforest Battle Royale Winner!")
+    if not battleResults['winner'].npc:
+        loggingInstance.info(f"Sending {battleInstance.totalWager} XRAIN to {battleResults['winner'].xrpId}") if botVerbosity else None
+        await xrplInstance.registerSeed(xrplConfig['seed'])
+        await xrplInstance.sendCoin(address=battleResults['winner'].xrpId,
+                                    value=battleInstance.totalWager,
+                                    coinHex=coinsConfig['XRAIN'],
+                                    memos="XRPL Rainforest Battle Royale Winner!")
     
     loggingInstance.info(f"/br success") if botVerbosity else None
         
