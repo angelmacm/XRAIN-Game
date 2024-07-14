@@ -92,11 +92,11 @@ class Battle:
                     quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
                     
             # Replace the player name to the format
-            quoteDescription:str = quoteDescription.replace("$Player1", playerOne.name)
+            quoteDescription:str = quoteDescription.replace("$Player1", f"**{playerOne.name}**")
             
             if quoteCategory not in ['Neutral', "Revival"]:
                 playerTwo = self.__randomUniqueUser()
-                quoteDescription = quoteDescription.replace("$Player2",playerTwo.name)
+                quoteDescription = quoteDescription.replace("$Player2",f"**{playerTwo.name}**")
             
             match quoteCategory:
                 

@@ -620,17 +620,17 @@ async def prepareStats(players: list[Players]):
     mostKills = sorted(players, key=lambda players: players.kills, reverse=True)
     killQuotes = ""
     for player in mostKills[:minRank]:
-        killQuotes += f"{player.name}: {player.kills}\n"
+        killQuotes += f"**{player.name}**: {player.kills}\n"
         
     mostDeaths = sorted(players, key=lambda players: players.deaths, reverse=True)
     deathQuotes = ""
     for player in mostDeaths[:minRank]:
-        deathQuotes += f"{player.name}: {player.deaths}\n"
+        deathQuotes += f"**{player.name}**: {player.deaths}\n"
     
     mostRevives = sorted(players, key=lambda players: players.reviveNum, reverse=True)
     reviveQuotes = ""
     for player in mostRevives[:minRank]:
-        reviveQuotes += f"{player.name}: {player.reviveNum}\n"
+        reviveQuotes += f"**{player.name}**: {player.reviveNum}\n"
     
     return killQuotes, deathQuotes, reviveQuotes
     
