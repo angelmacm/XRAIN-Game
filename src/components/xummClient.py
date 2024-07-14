@@ -1,23 +1,24 @@
 from components.config import xummConfig
 
 from xumm import XummSdk
+from xumm.resource.payload import XummGetPayloadResponse, XummPostPayloadResponse
 
 class XummClient:
     def __init__(self):
         self.xummSdk = XummSdk(xummConfig['API_KEY'], xummConfig['API_SECRET'])
         
-    def createSignIn(self):
+    def createSignIn(self) -> XummPostPayloadResponse:
         signInInfo = self.xummSdk.payload.create(payload={
             'TransactionType': "SignIn"
             })
          
         return signInInfo
     
-    def checkStatus(self, uuid):
+    def checkStatus(self, uuid) -> XummGetPayloadResponse:
         status = self.xummSdk.payload.get(uuid)
         return status.response
     
-    def createXrainPaymentRequest(self, recipient: str, amount: float, coinHex:str = "XRP"):
+    def createXrainPaymentRequest(self, recipient: str, amount: float, coinHex:str = "XRP") -> XummPostPayloadResponse:
         txJson = {
             "TransactionType": "Payment",
             "Destination": recipient,

@@ -1,7 +1,7 @@
 from database.db import BattleRoyaleDB
 from components.config import dbConfig, botConfig, coinsConfig, gameConfig
 from components.logging import loggingInstance
-from components.xummClient import XummClient
+from components.xummClient import XummClient, XummGetPayloadResponse
 
 from components.battles import Battle
 from components.players import Players
@@ -84,7 +84,7 @@ async def verifyAddress(ctx: InteractionContext):
             
             await dbInstance.setDiscordId(ctx.author.id, status.account)
 
-async def waitForPayment(ctx: InteractionContext, uuid):
+async def waitForPayment(ctx: InteractionContext, uuid) -> bool | XummGetPayloadResponse:
     status = xummInstance.checkStatus(uuid)
     maxWait = 120
     currentWait = 0
