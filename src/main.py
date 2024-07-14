@@ -63,7 +63,8 @@ async def randomColor():
 
 async def verifyAddress(ctx: InteractionContext):
     try:
-        await dbInstance.checkDiscordId(discordId=ctx.author.id)
+        xrpId = await dbInstance.checkDiscordId(discordId=ctx.author.id)
+        return xrpId
     except Exception as e:
         if str(e) != "DiscordIdNotFound":
             raise e
@@ -93,16 +94,19 @@ async def verifyAddress(ctx: InteractionContext):
             slash_str_option(
                 name = "xrpid",
                 description = "XRP Address that will receive the bonus reward",
-                required = True
+                required = False
             )
         ])
 async def chooseNft(ctx: InteractionContext):
     await ctx.defer(ephemeral=True, suppress_error=True) # Defer the response to wait for the function to run.
     loggingInstance.info(f"/choose-nft called by {ctx.author.display_name}")
+    
+    xrpId = await verifyAddress(ctx)
+    
     try:
-        nftOptions = await dbInstance.getNFTOption(ctx.args[0])
-    except:
-        ctx.send("xrpIdNotFound")
+        nftOptions = await dbInstance.getNFTOption(ctx.author.id)
+    except Exception as e:
+        await ctx.send("xrpIdNotFound")
         return
     
     nftMenu = StringSelectMenu(
@@ -167,7 +171,7 @@ async def chooseNft(ctx: InteractionContext):
     chosenNFT = int(result.ctx.values[0])
     chosenNFT = nftOptions[chosenGroup][chosenNFT]
     
-    await dbInstance.setNFT(xrpId=ctx.args[0],
+    await dbInstance.setNFT(xrpId=xrpId,
                             token=chosenNFT['tokenId'],
                             nftLink=chosenNFT['nftLink'],
                             xrainPower=chosenNFT['totalXrain'],
