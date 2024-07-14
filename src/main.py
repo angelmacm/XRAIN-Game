@@ -337,19 +337,17 @@ async def buyBoosts(ctx: InteractionContext):
     
 @slash_command(
         name="nft",
-        description="See the NFT that you are using for the battle royale!",
-        options= [
-            slash_str_option(
-                name = "xrpid",
-                description = "XRP Address",
-                required = True
-            )
-        ])
+        description="See the NFT that you are using for the battle royale!")
 async def getNFT(ctx: InteractionContext):
     await ctx.defer(ephemeral=False)
+    
     loggingInstance.info(f"/nft called by {ctx.author.display_name}") if botVerbosity else None
     
-    xrpId = ctx.kwargs['xrpid']
+    xrpId = await verifyAddress(ctx)
+    
+    if not xrpId:
+        return
+    
     try:
         nftInfo = await dbInstance.getNFTInfo(xrpId)
     except:
