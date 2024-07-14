@@ -255,33 +255,9 @@ async def fillXrainReserves(ctx: InteractionContext):
     
     await ctx.send(embed=embed)
     
-    status = xummInstance.checkStatus(paymentRequest.uuid)
-    maxWait = 120
-    currentWait = 0
-    try:
-        while status.hex is None:
-            if maxWait <= currentWait:
-                raise Exception("PaymentTimeout")                
-            
-            status = xummInstance.checkStatus(paymentRequest.uuid)
-            await sleep(1)
-            currentWait += 1
-            
-        if status.hex == '':
-            raise Exception('PaymentRejected')
-    except Exception as e:
-        embed = Embed(title="Transaction Failed",
-                      timestamp=datetime.now())
-        if str(e) == 'PaymentTimeout':
-            embed.description = f"Payment timeout, please complete the transaction within {maxWait}s"
-            
-        if str(e) == 'PaymentRejected':
-            embed.description = f"Payment rejected, please try again"
-            
-        else:
-            embed.description = f"{e} error occurred"
-            
-        await ctx.edit(embed=embed)
+    paymentSuccess = await waitForPayment(ctx, paymentRequest.uuid)
+    
+    if not paymentSuccess:
         return
     
     await dbInstance.addXrain(discordId, fillAmount)
@@ -309,14 +285,30 @@ async def fillXrainReserves(ctx: InteractionContext):
         ])
 async def buyBoosts(ctx: InteractionContext):
     await ctx.defer(ephemeral=True)
-    xrpId = ctx.kwargs['xrpid']
+    authorId = ctx.author_id
     boostAmount = ctx.kwargs['boost-amount']
     xrainPayment = 50 * boostAmount
-    
 
-    # XUMM SDK QR CODE GENERATE AND VALIDATE HERE
+    paymentRequest = xummInstance.createXrainPaymentRequest(
+        'ravqmjBaeJ59dw9uyHZhJ4UBXQBfHCeHo',
+        amount= xrainPayment,
+        coinHex= coinsConfig['XRAIN']
+    )
     
-    await dbInstance.addBoost(xrpId=xrpId, boost=boostAmount)
+    embed = Embed(title=f"Refill {xrainPayment} XRAIN to your Battle Royale reserves",
+                  description= f"Pay **__{xrainPayment}__** XRAIN to buy {boostAmount} boosts",
+                  color="#3052ff")
+    
+    embed.add_image(image=paymentRequest.refs.qr_png)
+    
+    await ctx.send(embed=embed)
+    
+    paymentSuccess = await waitForPayment(ctx, paymentRequest.uuid)
+    
+    if not paymentSuccess:
+        return
+    
+    await dbInstance.addBoost(uniqueId=authorId, boost=boostAmount)
     
     await ctx.send(f"You have successfully bought {boostAmount} boosts! Now pay {xrainPayment} XRAIN")
     
