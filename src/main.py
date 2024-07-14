@@ -82,14 +82,17 @@ async def register(ctx:InteractionContext):
     await dbInstance.setDiscordId(ctx.author.id, status.account)
     return status.account
 
-async def verifyAddress(ctx: InteractionContext, register = False):
+async def verifyAddress(ctx: InteractionContext, registerArg = False):
     try:
-        if register:
+        if registerArg:
             await register(ctx)
         
-        xrpId = await dbInstance.checkDiscordId(discordId=ctx.author.id)
+        xrpId = await dbInstance.checkDiscordId(discordId=ctx.author_id)
         return xrpId
     except Exception as e:
+        if str(e) == 'DiscordIdNotFound':
+            if registerArg is None:
+                return await register(ctx)
         raise e
         
 
@@ -146,9 +149,9 @@ async def chooseNft(ctx: InteractionContext):
     loggingInstance.info(f"/choose-nft called by {ctx.author.display_name}")  if botVerbosity else None
     register = False
     if 'register' in list(ctx.kwargs.keys()):
-        register = ctx.kwargs['register']
+        register = ctx.kwargs['register']      
         
-    xrpId = await verifyAddress(ctx, register=register)
+    xrpId = await verifyAddress(ctx, registerArg=register)
     
     if not xrpId:
         return
