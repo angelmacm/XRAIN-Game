@@ -89,7 +89,7 @@ async def verifyAddress(ctx: InteractionContext, register = False):
         xrpId = await dbInstance.checkDiscordId(discordId=ctx.author.id)
         return xrpId
     except Exception as e:
-        if str(e) == "RegisterNow" or str(e) == "DiscordIdNotFound":
+        if (str(e) == "RegisterNow" or str(e) == "DiscordIdNotFound") and register:
             await register(ctx)
         else:
             raise e
@@ -380,6 +380,10 @@ async def getNFT(ctx: InteractionContext):
     except:
         await ctx.send("xrpIdNotFound", ephemeral=True)
         loggingInstance.info(f"xrpIdNotFound") if botVerbosity else None
+        return
+    
+    if nftInfo['nftToken'] == "":
+        await ctx.edit(content="Battle NFT not found, use /choose-nft to verify your xrp ID")
         return
     
     embed = Embed(title=f"Battle NFT: {nftInfo['nftGroupName']} ***{nftInfo['nftToken'][-6:]}**",
