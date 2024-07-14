@@ -363,11 +363,14 @@ async def battleRoyale(ctx: InteractionContext):
     
     boostQuotes = ""
     
-    async def savePlayers(users: User, ctx: InteractionContext.channel):
+    async def savePlayers(ctx: InteractionContext, users: User = None, npc = False):
         try:
-            playerInfo = await dbInstance.getNFTInfo(users.id)
-        except:
-            await ctx.send(f"{escapeMarkdown(users.display_name)}, not found. Please verify your wallet first")
+            if not npc:
+                playerInfo = await dbInstance.getNFTInfo(users.id)
+            else:
+                playerInfo = await dbInstance.getNFTInfo(npc=npc)
+        except Exception as e:
+            await ctx.channel.send(f"{escapeMarkdown(str(users.id))}, not found. Please verify your wallet first") if users is not None else None
             return None
             
         
@@ -375,30 +378,39 @@ async def battleRoyale(ctx: InteractionContext):
             
         playerInstance = Players(xrpId=playerInfo['xrpId'],
                                  wager=0,
-                                 name=escapeMarkdown(users.display_name),
-                                 discordId=users.id,
+                                 name=escapeMarkdown(users.display_name) if not npc else "XRPL Rainforest Warrior",
+                                 discordId=users.id if not npc else 0,
                                  boosts=playerInfo['reserveBoosts'],
                                  battleWins=playerInfo['battleWins'],
                                  tokenId=playerInfo['nftToken'],
                                  nftLink=playerInfo['nftLink'],
-                                 taxonId=playerInfo['taxonId'])
+                                 taxonId=playerInfo['taxonId'],
+                                 npc=playerInfo['npc'])
         
         playerInstance.addNFTImage(await fetchImage(playerInstance.nftLink))
         
         battleInstance.join(playerInstance)
         
        
-    coros = [savePlayers(xrpId, ctx.channel) for xrpId in playersJoined]
+    coros = [savePlayers(ctx, user) for user in playersJoined]
     
     await gather(*coros)
     
+    if len(battleInstance.players) == 0:
+        await ctx.send("No one answered the call!")
+        return
+    elif len(battleInstance.players) == 1:
+        await savePlayers(ctx, npc=True)
+        await ctx.channel.send("A XRPL Rainforest Warrior joined!")
+    
     for player in battleInstance.players:
-        if player is None:
+        if player is None or player.npc:
             continue 
         
         if player.boosts > 0:
             boostQuotes += f"**\\@{player.name}** is **100% boosted** and ready!\n"
-            # await dbInstance.claimBoost(player.xrpId)
+            if not player.npc:
+                await dbInstance.claimBoost(player.xrpId)
         else:
             boostQuotes += f"**\\@{player.name}** is ready for the battle\n"
     
