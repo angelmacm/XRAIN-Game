@@ -510,7 +510,9 @@ async def battleRoyale(ctx: InteractionContext):
     winnerImageEmbed = Embed(title="XRPLRainforest Battle Royale Winner", color=winnerEmbedColor)
     winnerImageEmbed.set_image(battleResults['winner'].nftLink)
     
-    winnerTextEmbed = Embed(description=f"**{battleResults['winner'].mention if not battleResults['winner'].npc else battleResults['winner'].name}** has won the battle royale!\n\nYou've won **__{battleInstance.totalWager} XRAIN__**!!", color=winnerEmbedColor)
+    winnerDescription = f"Congratulations **{battleResults['winner'].mention if not battleResults['winner'].npc else battleResults['winner'].name}** your NFT has won this Rainforest Battle."
+    winnerDescription += f" **__{battleInstance.totalWager} XRAIN__** has been sent to you!!" if not battleResults['winner'].npc else ""
+    winnerTextEmbed = Embed(description=winnerDescription, color=winnerEmbedColor)
     winnerTextEmbed.add_field(name="Kills",value=f":knife:{battleResults['winner'].kills}", inline=True)
     winnerTextEmbed.add_field(name="Revives",value=f":wing:{battleResults['winner'].reviveNum}", inline=True)
     
