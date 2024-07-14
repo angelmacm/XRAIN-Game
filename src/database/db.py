@@ -130,7 +130,7 @@ class BattleRoyaleDB:
                 else:
                     nftOptions[nftGroupName] = [entry]
             
-            loggingInstance.info(f"getNFTOption({uniqueId}): {nftOptions}") if self.verbose else None
+            loggingInstance.info(f"getNFTOption({uniqueId}): success") if self.verbose else None
             
             return nftOptions
         
