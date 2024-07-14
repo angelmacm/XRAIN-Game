@@ -355,7 +355,7 @@ async def getNFT(ctx: InteractionContext):
     try:
         nftInfo = await dbInstance.getNFTInfo(xrpId)
     except:
-        ctx.send("xrpIdNotFound", ephemeral=True)
+        await ctx.send("xrpIdNotFound", ephemeral=True)
         loggingInstance.info(f"xrpIdNotFound") if botVerbosity else None
         return
     
