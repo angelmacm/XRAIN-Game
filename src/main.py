@@ -64,14 +64,15 @@ async def randomColor():
     
     return f"#{randomColorCode}"
 
-async def verifyAddress(ctx: InteractionContext):
+async def verifyAddress(ctx: InteractionContext, register = False):
     try:
+        if register:
+            raise Exception("RegisterNow")
+        
         xrpId = await dbInstance.checkDiscordId(discordId=ctx.author.id)
         return xrpId
     except Exception as e:
-        if str(e) != "DiscordIdNotFound":
-            raise e
-        else:
+        if str(e) == "RegisterNow":
             signInData = xummInstance.createSignIn()
             
             embed = Embed(title='Verify your wallet',
@@ -81,11 +82,17 @@ async def verifyAddress(ctx: InteractionContext):
 
             await ctx.send(embed=embed)
             
-            status = await waitForPayment(signInData.uuid)
+            status = await waitForPayment(ctx, signInData.uuid)
             if not status:
-                return
+                return False
             
             await dbInstance.setDiscordId(ctx.author.id, status.account)
+            return status.account
+        elif str(e) != "DiscordIdNotFound":
+            raise e
+        else:
+            raise e
+        
 
 async def waitForPayment(ctx: InteractionContext, uuid) -> bool | XummGetPayloadResponse:
     status = xummInstance.checkStatus(uuid)
@@ -128,18 +135,15 @@ async def waitForPayment(ctx: InteractionContext, uuid) -> bool | XummGetPayload
 @slash_command(
         name="choose-nft",
         description="Choose which NFT you want to use for the battle",
-        options= [
-            slash_str_option(
-                name = "xrpid",
-                description = "XRP Address that will receive the bonus reward",
-                required = False
-            )
-        ])
+        )
 async def chooseNft(ctx: InteractionContext):
     await ctx.defer(ephemeral=True, suppress_error=True) # Defer the response to wait for the function to run.
     loggingInstance.info(f"/choose-nft called by {ctx.author.display_name}")  if botVerbosity else None
     
-    xrpId = await verifyAddress(ctx)
+    xrpId = await verifyAddress(ctx, register=True)
+    
+    if not xrpId:
+        return
     
     try:
         nftOptions = await dbInstance.getNFTOption(ctx.author.id)
