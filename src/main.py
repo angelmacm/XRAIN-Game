@@ -345,12 +345,15 @@ async def getNFT(ctx: InteractionContext):
     
     try:
         xrpId = await verifyAddress(ctx)
+        if not xrpId:
+            return
     except Exception as e:
         if str(e) == 'DiscordIdNotFound':
             await ctx.send("Please verify your wallet first via /choose-nft", ephemeral=True)
-    
-    if not xrpId:
+            return
+        await ctx.send(f"{e} error occurred", ephemeral=True)
         return
+    
     await ctx.send("Checking your xrpId settings", ephemeral=True)
     try:
         nftInfo = await dbInstance.getNFTInfo(xrpId)
