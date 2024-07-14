@@ -223,9 +223,24 @@ async def fillXrainReserves(ctx: InteractionContext):
     await ctx.send(embed=embed)
     
     status = xummInstance.checkStatus(paymentRequest.uuid)
-    while status['hex'] is None:
-        status = xummInstance.checkStatus(paymentRequest.uuid)
-        await sleep(1)
+    maxWait = 120
+    currentWait = 0
+    try:
+        while status.hex is None:
+            if maxWait <= currentWait:
+                raise Exception("PaymentTimeout")                
+            
+            status = xummInstance.checkStatus(paymentRequest.uuid)
+            await sleep(1)
+            currentWait += 1
+            
+    except Exception as e:
+        if str(e) == 'PaymentTimeout':
+            embed = Embed(title="Transaction Failed",
+                          description=f"Payment timeout, please complete the transaction within {maxWait}s",
+                          timestamp=datetime.now())
+            await ctx.edit(embed=embed)
+            return
     
     await dbInstance.addXrain(xrpId, fillAmount)
     
@@ -506,7 +521,6 @@ async def preRoundInfo(channel: InteractionContext.channel,
         preRoundEmbed.set_image(url="attachment://collage.png")
         return await channel.send(embeds=[preRoundEmbed],file=file)
     
-
 async def postRoundInfo(channel:InteractionContext.channel,
                         battleResults,
                         roundColor):
