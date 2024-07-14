@@ -188,20 +188,13 @@ async def chooseNft(ctx: InteractionContext):
             componentResult: Component = await client.wait_for_component(components=component, check=check, timeout=60)
             await ctx.defer(ephemeral=True, suppress_error=True)
             await componentResult.ctx.defer(edit_origin=True)
-            if componentResult.ctx.values is not None:
-                return componentResult
-            else:
-                return None
-        except CancelledError:
-            loggingInstance.info("CancelledError")
-            await ctx.send("Timed out in selecting option", ephemeral=True)
-            return None
+            return componentResult
+
         except Exception as e:
             loggingInstance.info("{e} error occurred")
-            await ctx.send(f"{e} error occurred", ephemeral=True)
+            await ctx.send(f"Timed out in selecting option", ephemeral=True)
             return None
             
-    loggingInstance.info(f"componentResult = {componentResult}: {type(componentResult)}")
     componentResult = await waitComponent(nftMenu, ctx)
     
     loggingInstance.info(f"Valid NFT Group Choice: {type(componentResult) == Component}") if botVerbosity else None
@@ -210,7 +203,6 @@ async def chooseNft(ctx: InteractionContext):
         return
     
     chosenGroup = componentResult.ctx.values[0]
-    # ctx.send(f"Selected {chosenGroup}", ephemeral=True)
     groupOptions = []
     index = 0
     
@@ -229,6 +221,9 @@ async def chooseNft(ctx: InteractionContext):
     await ctx.edit(content=f"Select NFT from {chosenGroup} group",components=groupMenu)
     
     result = await waitComponent(groupMenu, ctx)
+    
+    if not result or result is None:
+        return
     
     loggingInstance.info(f"Valid NFT Choice: {type(result) == Component}") if botVerbosity else None 
     
