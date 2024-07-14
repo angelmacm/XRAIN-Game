@@ -23,7 +23,7 @@ class BattleRoyaleDB:
                                                     expire_on_commit=False)
         self.verbose = verbose
         
-    async def getNFTInfo(self, uniqueId):
+    async def getNFTInfo(self, uniqueId = "", npc = False):
         async with self.asyncSessionMaker() as session: 
             
             query = select(
@@ -36,12 +36,23 @@ class BattleRoyaleDB:
                         RewardsTable.battleWins,
                         RewardsTable.nftGroupName,
                         RewardsTable.taxonId
-                    ).filter(
+                    )
+            
+            if not npc:
+                query = query.filter(
                         or_(
                             RewardsTable.xrpId == uniqueId,
                             RewardsTable.discordId == uniqueId
                         )
                     )
+                    
+            if npc:
+                query = query.filter(
+                    RewardsTable.tokenIdBattleNFT != "",
+                    RewardsTable.xrainPower != 0,
+                    RewardsTable.nftlink != "",
+                    RewardsTable.nftGroupName != "",
+                ).order_by(func.random()).limit(1)
                     
             sessionResult = await session.execute(query)
             sessionResult = sessionResult.first()
@@ -73,7 +84,8 @@ class BattleRoyaleDB:
                     'battleWins': battleWins,
                     'battleRank': battleRank,
                     'nftGroupName': nftGroupName,
-                    'taxonId': taxonId}
+                    'taxonId': taxonId,
+                    'npc': npc}
             
     async def setNFT(self, xrpId, token, nftLink, xrainPower, taxonId, groupName):
         async with self.asyncSessionMaker() as session:    
