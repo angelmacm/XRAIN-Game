@@ -312,9 +312,9 @@ async def fillXrainReserves(ctx: InteractionContext):
             slash_int_option(
                 description= "Number of XRAIN you want to wager",
                 name='boost-amount',
-                choices=[SlashCommandChoice(name='3', value=3),
-                         SlashCommandChoice(name='10', value=10),
-                         SlashCommandChoice(name='20', value=20),
+                choices=[SlashCommandChoice(name='3 Boost = 150 XRAIN', value=3),
+                         SlashCommandChoice(name='10 Boost = 500 XRAIN', value=10),
+                         SlashCommandChoice(name='20 Boost = 1000 XRAIN', value=20),
                          ],
                 required=True
             )
