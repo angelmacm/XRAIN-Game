@@ -83,7 +83,7 @@ class BattleRoyaleDB:
                         )
                 loggingInstance.info(f"setNFT({xrpId}, {token}): Success") if self.verbose else None
     
-    async def getNFTOption(self, xrpId):
+    async def getNFTOption(self, uniqueId):
         async with self.asyncSessionMaker() as session:     
             query = select(NFTTraitList.tokenId,
                            NFTTraitList.nftlink,
@@ -91,7 +91,10 @@ class BattleRoyaleDB:
                            NFTTraitList.nftGroupName,
                            NFTTraitList.taxonId
                     ).filter(
-                            NFTTraitList.xrpId == xrpId,
+                            or_(
+                                RewardsTable.xrpId == uniqueId,
+                                RewardsTable.discordId == uniqueId
+                            ),
                             NFTTraitList.nftlink != ''
                     ).order_by(
                             NFTTraitList.nftGroupName
@@ -116,7 +119,7 @@ class BattleRoyaleDB:
                 else:
                     nftOptions[nftGroupName] = [entry]
             
-            loggingInstance.error(f"getNFTOption({xrpId}): {nftOptions}") if self.verbose else None
+            loggingInstance.error(f"getNFTOption({uniqueId}): {nftOptions}") if self.verbose else None
             
             return nftOptions
         
