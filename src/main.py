@@ -189,6 +189,7 @@ async def chooseNft(ctx: InteractionContext):
             return componentResult
         except:
             await ctx.send("Timed out in selecting option", ephemeral=True)
+            return None
             
     componentResult = await waitComponent(nftMenu, ctx)
     
