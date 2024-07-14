@@ -345,7 +345,6 @@ async def getNFT(ctx: InteractionContext):
     
     try:
         xrpId = await verifyAddress(ctx)
-        if not xrpId
     except Exception as e:
         if str(e) == 'DiscordIdNotFound':
             await ctx.send("Please verify your wallet first via /choose-nft")
