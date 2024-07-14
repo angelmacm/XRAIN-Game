@@ -137,13 +137,14 @@ async def waitForPayment(ctx: InteractionContext, uuid) -> bool | XummGetPayload
         ])
 async def chooseNft(ctx: InteractionContext):
     await ctx.defer(ephemeral=True, suppress_error=True) # Defer the response to wait for the function to run.
-    loggingInstance.info(f"/choose-nft called by {ctx.author.display_name}")
+    loggingInstance.info(f"/choose-nft called by {ctx.author.display_name}")  if botVerbosity else None
     
     xrpId = await verifyAddress(ctx)
     
     try:
         nftOptions = await dbInstance.getNFTOption(ctx.author.id)
     except Exception as e:
+        loggingInstance.error(f"xrpIdNotFound")  if botVerbosity else None
         await ctx.send("xrpIdNotFound")
         return
     
@@ -178,7 +179,7 @@ async def chooseNft(ctx: InteractionContext):
             
     componentResult = await waitComponent(nftMenu, ctx)
     
-    loggingInstance.info(f"Valid NFT Group Choice: {type(componentResult) == Component}")
+    loggingInstance.info(f"Valid NFT Group Choice: {type(componentResult) == Component}") if botVerbosity else None
     
     if not componentResult:
         return
@@ -204,7 +205,7 @@ async def chooseNft(ctx: InteractionContext):
     
     result = await waitComponent(groupMenu, ctx)
     
-    loggingInstance.info(f"Valid NFT Choice: {type(result) == Component}")
+    loggingInstance.info(f"Valid NFT Choice: {type(result) == Component}") if botVerbosity else None 
     
     chosenNFT = int(result.ctx.values[0])
     chosenNFT = nftOptions[chosenGroup][chosenNFT]
@@ -221,7 +222,7 @@ async def chooseNft(ctx: InteractionContext):
     embed.add_image(chosenNFT['nftLink'])
     await ctx.edit(content=f"", components=[], embed=embed)
     
-    loggingInstance.info(f"NFT Choice: {chosenNFT['label']}")
+    loggingInstance.info(f"NFT Choice: {chosenNFT['label']}") if botVerbosity else None
     
 @slash_command(
         name="fill-xrain-reserve",
@@ -242,6 +243,7 @@ async def chooseNft(ctx: InteractionContext):
         ])
 async def fillXrainReserves(ctx: InteractionContext):
     await ctx.defer(ephemeral=True)
+    loggingInstance.info(f"/fill-xrain-reserve called by {ctx.author.display_name}") if botVerbosity else None
     
     await verifyAddress(ctx)
     
@@ -249,11 +251,13 @@ async def fillXrainReserves(ctx: InteractionContext):
     fillAmount = ctx.kwargs['xrain-amount']
     
     # XUMM SDK QR CODE GENERATE AND VALIDATE HERE
+    loggingInstance.info(f"Creating payment request for {fillAmount} XRAINS") if botVerbosity else None
     paymentRequest = xummInstance.createXrainPaymentRequest(
         'ravqmjBaeJ59dw9uyHZhJ4UBXQBfHCeHo',
         amount= fillAmount,
         coinHex= coinsConfig['XRAIN']
     )
+    loggingInstance.info(f"Payment ID: {paymentRequest.uuid}") if botVerbosity else None
     
     embed = Embed(title=f"Refill {fillAmount} XRAIN to your Battle Royale reserves",
                   description= f"Pay **__{fillAmount}__** XRAIN to refill your reserves",
@@ -275,6 +279,7 @@ async def fillXrainReserves(ctx: InteractionContext):
                           timestamp=datetime.now())
         
     await ctx.edit(embed=embed)
+    loggingInstance.info(f"/fill-xrain-reserve called of {ctx.author.display_name} success") if botVerbosity else None
     
 @slash_command(
         name="buy-boost",
@@ -293,17 +298,21 @@ async def fillXrainReserves(ctx: InteractionContext):
 async def buyBoosts(ctx: InteractionContext):
     await ctx.defer(ephemeral=True)
     
+    loggingInstance.info(f"/buy-boost called by {ctx.author.display_name}") if botVerbosity else None
+    
     await verifyAddress(ctx)
     
     authorId = ctx.author_id
     boostAmount = ctx.kwargs['boost-amount']
     xrainPayment = 50 * boostAmount
 
+    loggingInstance.info(f"Creating payment request for {xrainPayment} XRAIN") if botVerbosity else None
     paymentRequest = xummInstance.createXrainPaymentRequest(
         'ravqmjBaeJ59dw9uyHZhJ4UBXQBfHCeHo',
         amount= xrainPayment,
         coinHex= coinsConfig['XRAIN']
     )
+    loggingInstance.info(f"Payment ID: {paymentRequest.uuid}") if botVerbosity else None
     
     embed = Embed(title=f"Refill {xrainPayment} XRAIN to your Battle Royale reserves",
                   description= f"Pay **__{xrainPayment}__** XRAIN to buy {boostAmount} boosts",
@@ -334,12 +343,14 @@ async def buyBoosts(ctx: InteractionContext):
         ])
 async def getNFT(ctx: InteractionContext):
     await ctx.defer(ephemeral=False)
+    loggingInstance.info(f"/nft called by {ctx.author.display_name}") if botVerbosity else None
     
     xrpId = ctx.kwargs['xrpid']
     try:
         nftInfo = await dbInstance.getNFTInfo(xrpId)
     except:
         ctx.send("xrpIdNotFound")
+        loggingInstance.info(f"xrpIdNotFound") if botVerbosity else None
         return
     
     embed = Embed(title=f"Battle NFT: {nftInfo['nftGroupName']} ***{nftInfo['nftToken'][-6:]}**",
@@ -369,6 +380,7 @@ async def getNFT(ctx: InteractionContext):
     embed.set_image(url=nftInfo['nftLink'])
 
     await ctx.send(embed=embed)
+    loggingInstance.info(f"/nft called by {ctx.author.display_name} success") if botVerbosity else None
     
 @slash_command(
         name="br",
@@ -398,9 +410,10 @@ async def getNFT(ctx: InteractionContext):
             ),
         ])
 async def battleRoyale(ctx: InteractionContext):
-    await ctx.defer()
-    wager = ctx.kwargs['wager']
+    await ctx.defer()  
     loggingInstance.info(f"/br called by {ctx.author.display_name}") if botVerbosity else None
+    
+    wager = ctx.kwargs['wager']
     embed = Embed(title="XRPL Rainforest Battle Royale!!",
                       description=f"The Battle Royale Horn has sounded by XRPLRainforest Warriors!!\n\nClick the emoji below to answer the call for **__{wager} XRAIN.__**",
                       timestamp=datetime.now())
@@ -415,9 +428,11 @@ async def battleRoyale(ctx: InteractionContext):
     
     await battleCall.add_reaction(":crossed_swords:")
     
+    loggingInstance.info(f"Sleeping for {ctx.args[0]}") if botVerbosity else None
     await sleep(ctx.args[0])
     
     playersReactor = await battleCall.fetch_reaction(':crossed_swords:')
+    loggingInstance.info(f"{len(playersReactor)} players attempted to join") if botVerbosity else None
     playersJoined = [users for users in playersReactor if users.id != client.app.id]
     
     battleInstance = Battle(dbInstance)
@@ -436,8 +451,10 @@ async def battleRoyale(ctx: InteractionContext):
         except Exception as e:
             match str(e):
                 case "xrpIdNotFound":
+                    loggingInstance.error(f"xrpIdNotFound") if botVerbosity else None
                     await ctx.channel.send(f"{users.mention}, not found. Please verify your wallet first") if users is not None else None
                 case "insufficientCredits":
+                    loggingInstance.error(f"{users.id} insufficient credit") if botVerbosity else None
                     await ctx.channel.send(f"Insufficient  credits for {users.mention}. Please refill your XRAIN reserves") if users is not None else None
             return None    
         
@@ -468,6 +485,7 @@ async def battleRoyale(ctx: InteractionContext):
         await ctx.send("No one answered the call!")
         return
     elif len(battleInstance.players) == 1:
+        loggingInstance.info(f"Lone joiner, creating NPC") if botVerbosity else None
         await savePlayers(ctx, wager=wager, npc=True)
         await ctx.channel.send("A XRPL Rainforest Warrior joined!")
     
@@ -500,7 +518,7 @@ async def battleRoyale(ctx: InteractionContext):
     
     while battleResults['winner'] is None:
         await randomWait()
-        
+        loggingInstance.info(f"[Round {roundNumber}]: {battleResults['participantsNum']/len(battleInstance.players)} alive") if botVerbosity else None
         await postRoundInfo(ctx.channel, battleResults, roundColor = roundColor)
         roundNumber += 1
         roundColor = await randomColor()
@@ -512,7 +530,8 @@ async def battleRoyale(ctx: InteractionContext):
                            roundColor = roundColor)
         battleResults = await battleInstance.battle()
         await randomWait()
-    
+        
+    loggingInstance.info(f"[Round {roundNumber}]: {battleResults['participantsNum']/len(battleInstance.players)} alive") if botVerbosity else None
     await postRoundInfo(ctx.channel, battleResults, roundColor = roundColor)
     mostKills, mostDeaths, mostRevives = await prepareStats(battleInstance.players)
     
@@ -539,12 +558,15 @@ async def battleRoyale(ctx: InteractionContext):
     
     await ctx.send(embeds=[winnerImageEmbed, claimEmbed, winnerTextEmbed, statsEmbed])
     
+    loggingInstance.info(f"Winner: {battleResults['winner'].mention if not battleResults['winner'].npc else "NPC"}") if botVerbosity else None
+    
+    loggingInstance.info(f"Sending {battleInstance.totalWager} XRAIN to {battleResults['winner'].xrpId}") if botVerbosity else None
     await xrplInstance.sendCoin(address=battleResults['winner'].xrpId,
                                 value=battleInstance.totalWager,
                                 coinHex=coinsConfig['XRAIN'],
                                 memos="XRPL Rainforest Battle Royale Winner!")
     
-    loggingInstance.info(f"/br done") if botVerbosity else None
+    loggingInstance.info(f"/br success") if botVerbosity else None
         
 async def prepareStats(players: list[Players]):
     minRank = gameConfig.getint('stat_best_num')
