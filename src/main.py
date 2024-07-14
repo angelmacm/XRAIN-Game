@@ -189,11 +189,6 @@ async def chooseNft(ctx: InteractionContext):
         name="fill-xrain-reserve",
         description="Buy plays for the battle royale!",
         options= [
-            slash_str_option(
-                name = "xrpid",
-                description = "XRP Address that will receive the bonus reward",
-                required = True
-            ),
             slash_int_option(
                 description= "Number of XRAIN you want to wager",
                 name='xrain-amount',
@@ -209,7 +204,7 @@ async def chooseNft(ctx: InteractionContext):
         ])
 async def fillXrainReserves(ctx: InteractionContext):
     await ctx.defer(ephemeral=True)
-    xrpId = ctx.kwargs['xrpid']
+    discordId = ctx.author_id
     fillAmount = ctx.kwargs['xrain-amount']
     
     # XUMM SDK QR CODE GENERATE AND VALIDATE HERE
@@ -241,11 +236,6 @@ async def fillXrainReserves(ctx: InteractionContext):
         name="buy-boost",
         description="Buy boosts for the battle royale!",
         options= [
-            slash_str_option(
-                name = "xrpid",
-                description = "XRP Address that will receive the bonus reward",
-                required = True
-            ),
             slash_int_option(
                 description= "Number of XRAIN you want to wager",
                 name='boost-amount',
