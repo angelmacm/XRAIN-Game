@@ -105,8 +105,8 @@ async def waitForPayment(ctx: InteractionContext, uuid) -> bool | XummGetPayload
                 raise Exception("PaymentTimeout")                
             
             status = xummInstance.checkStatus(uuid)
-            await sleep(1)
-            currentWait += 1
+            await sleep(3)
+            currentWait += 3
             
         if status.hex == '':
             raise Exception('PaymentRejected')
