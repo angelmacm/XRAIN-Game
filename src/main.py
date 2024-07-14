@@ -135,12 +135,21 @@ async def waitForPayment(ctx: InteractionContext, uuid) -> bool | XummGetPayload
 @slash_command(
         name="choose-nft",
         description="Choose which NFT you want to use for the battle",
+        options=[
+            slash_bool_option(
+                name = "register",
+                description= "Set to true if you want to reregister your xrpId",
+            )
+        ]
         )
 async def chooseNft(ctx: InteractionContext):
     await ctx.defer(ephemeral=True, suppress_error=True) # Defer the response to wait for the function to run.
     loggingInstance.info(f"/choose-nft called by {ctx.author.display_name}")  if botVerbosity else None
-    
-    xrpId = await verifyAddress(ctx, register=True)
+    register = False
+    if 'register' in list(ctx.kwargs.keys()):
+        register = ctx.kwargs['register']
+        
+    xrpId = await verifyAddress(ctx, register=register)
     
     if not xrpId:
         return
