@@ -234,17 +234,30 @@ async def fillXrainReserves(ctx: InteractionContext):
             await sleep(1)
             currentWait += 1
             
+        if status.hex == '':
+            raise Exception('PaymentRejected')
     except Exception as e:
+        embed = Embed(title="Transaction Failed",
+                      timestamp=datetime.now())
         if str(e) == 'PaymentTimeout':
-            embed = Embed(title="Transaction Failed",
-                          description=f"Payment timeout, please complete the transaction within {maxWait}s",
-                          timestamp=datetime.now())
-            await ctx.edit(embed=embed)
-            return
+            embed.description = f"Payment timeout, please complete the transaction within {maxWait}s"
+            
+        if str(e) == 'PaymentRejected':
+            embed.description = f"Payment rejected, please try again"
+            
+        else:
+            embed.description = f"{e} error occurred"
+            
+        await ctx.edit(embed=embed)
+        return
     
     await dbInstance.addXrain(discordId, fillAmount)
     
-    await ctx.edit(f"Successfully filled {fillAmount} to your reserves", embed={})
+    embed = Embed(title="Transaction Success",
+                          description=f"Successfully filled {fillAmount} to your reserves",
+                          timestamp=datetime.now())
+        
+    await ctx.edit(embed=embed)
     
     
 @slash_command(
