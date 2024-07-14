@@ -147,14 +147,19 @@ async def waitForPayment(ctx: InteractionContext, uuid) -> bool | XummGetPayload
 async def chooseNft(ctx: InteractionContext):
     await ctx.defer(ephemeral=True, suppress_error=True) # Defer the response to wait for the function to run.
     loggingInstance.info(f"/choose-nft called by {ctx.author.display_name}")  if botVerbosity else None
-    register = False
+    register = None
     if 'register' in list(ctx.kwargs.keys()):
         register = ctx.kwargs['register']      
-        
-    xrpId = await verifyAddress(ctx, registerArg=register)
     
-    if not xrpId:
-        return
+    try:
+        xrpId = await verifyAddress(ctx, registerArg=register)
+        
+        if not xrpId:
+            return
+    except Exception as e:
+        if str(e) == "DiscordIdNotFound":
+            await ctx.send("XRP ID not found, please do not set register to False.")
+            return
     
     try:
         nftOptions = await dbInstance.getNFTOption(ctx.author.id)
