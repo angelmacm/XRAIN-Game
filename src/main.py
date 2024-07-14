@@ -78,7 +78,9 @@ async def verifyAddress(ctx: InteractionContext):
 
             await ctx.send(embed=embed)
             
-            status = await xummWaitForCompletion(signInData.uuid)
+            status = await waitForPayment(signInData.uuid)
+            if not status:
+                return
             
             await dbInstance.setDiscordId(ctx.author.id, status.account)
 
@@ -98,16 +100,16 @@ async def waitForPayment(ctx: InteractionContext, uuid):
         if status.hex == '':
             raise Exception('PaymentRejected')
 
-        return True
+        return status
     
     except Exception as e:
         embed = Embed(title="Transaction Failed",
                       timestamp=datetime.now())
         if str(e) == 'PaymentTimeout':
-            embed.description = f"Payment timeout, please complete the transaction within {maxWait}s"
+            embed.description = f"Transaction timeout, please complete the process within {maxWait}s"
             
         if str(e) == 'PaymentRejected':
-            embed.description = f"Payment rejected, please try again"
+            embed.description = f"Transaction rejected, please try again"
             
         else:
             embed.description = f"{e} error occurred"
