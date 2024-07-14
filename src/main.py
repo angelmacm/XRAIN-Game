@@ -283,7 +283,8 @@ async def fillXrainReserves(ctx: InteractionContext):
     
     embed = Embed(title=f"Refill {fillAmount} XRAIN to your Battle Royale reserves",
                   description= f"Pay **__{fillAmount}__** XRAIN to refill your reserves",
-                  color="#3052ff")
+                  color="#3052ff",
+                  url=paymentRequest.next.always)
     
     embed.add_image(image=paymentRequest.refs.qr_png)
     
@@ -338,7 +339,8 @@ async def buyBoosts(ctx: InteractionContext):
     
     embed = Embed(title=f"Refill {xrainPayment} XRAIN to your Battle Royale reserves",
                   description= f"Pay **__{xrainPayment}__** XRAIN to buy {boostAmount} boosts",
-                  color="#3052ff")
+                  color="#3052ff",
+                  url=paymentRequest.next.always)
     
     embed.add_image(image=paymentRequest.refs.qr_png)
     
