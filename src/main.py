@@ -195,7 +195,7 @@ async def chooseNft(ctx: InteractionContext):
     
     loggingInstance.info(f"Valid NFT Group Choice: {type(componentResult) == Component}") if botVerbosity else None
     
-    if not componentResult:
+    if not componentResult or componentResult is None:
         return
     
     chosenGroup = componentResult.ctx.values[0]
