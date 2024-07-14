@@ -196,7 +196,7 @@ async def chooseNft(ctx: InteractionContext):
             return None
         except Exception as e:
             loggingInstance.info("{e} error occurred")
-            await ctx.send(f"", ephemeral=True)
+            await ctx.send(f"{e} error occurred", ephemeral=True)
             return None
             
     loggingInstance.info(f"componentResult = {componentResult}: {type(componentResult)}")
