@@ -559,6 +559,7 @@ async def battleRoyale(ctx: InteractionContext):
     statsEmbed.add_field(name="**Top 3 Revives**", value=mostRevives,inline=True)
     statsEmbed.set_footer("XRPLRainforest Battle Royale")    
     
+    await dbInstance.addWin(battleResults['winner'].xrpId) if not battleResults['winner'].npc else None
     
     await ctx.send(embeds=[winnerImageEmbed, claimEmbed, winnerTextEmbed, statsEmbed])
     
