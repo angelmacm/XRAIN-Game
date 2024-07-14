@@ -14,8 +14,7 @@ class BattleRoyaleDB:
         #                   username          if empty, do not add :, else :password      host   dbName
         sqlLink = f"mysql+aiomysql://{username}{'' if password in ['', None] else f':{password}'}@{host}/{dbName}"
         loggingInstance.info(f"DB Link: {sqlLink}")
-        self.dbEngine = create_async_engine(sqlLink, 
-                                            echo=verbose,
+        self.dbEngine = create_async_engine(sqlLink,
                                             pool_recycle = 3600,
                                             pool_pre_ping=True)
         
@@ -75,6 +74,8 @@ class BattleRoyaleDB:
             elif battleWins < 100:
                 battleRank = "Golden Oracle Warlord :trident:"
             
+            loggingInstance.info(f"getNFTInfo({uniqueId}): Success") if self.verbose else None
+            
             return {'xrpId':xrpId,
                     'nftToken': tokenId,
                     'xrainPower': xrainPower,
@@ -115,6 +116,7 @@ class BattleRoyaleDB:
             queryResult = queryResult.all()
             
             if not queryResult:
+                loggingInstance.Error(f"getNFTOption({uniqueId}): xrpIdNotFound") if self.verbose else None
                 raise Exception("xrpIdNotFound")
             
             nftOptions = {}
@@ -131,7 +133,7 @@ class BattleRoyaleDB:
                 else:
                     nftOptions[nftGroupName] = [entry]
             
-            loggingInstance.error(f"getNFTOption({uniqueId}): {nftOptions}") if self.verbose else None
+            loggingInstance.info(f"getNFTOption({uniqueId}): {nftOptions}") if self.verbose else None
             
             return nftOptions
         
@@ -196,10 +198,7 @@ class BattleRoyaleDB:
             queryResult = queryResult.first()
             
             if not queryResult:
-                loggingInstance.info(f"addBoost(): RandomQuoteGetError") if self.verbose else None
                 raise Exception("RandomQuoteGetError")
-            
-            loggingInstance.info(f"addBoost(): {queryResult}") if self.verbose else None
             
             if queryResult[0] == 'Revival' and not revival:
                 return await self.getRandomQuote()
@@ -214,8 +213,10 @@ class BattleRoyaleDB:
             queryResult = queryResult.first()
             
             if queryResult is None:
+                loggingInstance.error(f"checkDiscordId({discordId}): DiscordIdNotFound") if self.verbose else None
                 raise Exception("DiscordIdNotFound")
             
+            loggingInstance.info(f"checkDiscordId({discordId}): Success") if self.verbose else None
             return queryResult[1]
         
     async def setDiscordId(self, discordId, xrpId):
@@ -224,6 +225,7 @@ class BattleRoyaleDB:
                 await session.execute(
                     update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(discordId = discordId)
                         )
+                loggingInstance.info(f"setDiscordI({discordId}, {xrpId}): Success") if self.verbose else None
             
     async def getClaimQuote(self, taxonId) -> dict:
         async with self.asyncSessionMaker() as session:
