@@ -461,7 +461,7 @@ async def battleRoyale(ctx: InteractionContext):
         await ctx.channel.send("A XRPL Rainforest Warrior joined!")
     
     for player in battleInstance.players:
-        if player is None or player.npc:
+        if player is None:
             continue 
         
         if player.boosts > 0:
