@@ -69,7 +69,8 @@ async def register(ctx:InteractionContext):
             
     embed = Embed(title='Verify your wallet',
                     description="Scan the QR Code to verify your wallet",
-                    color="#3052ff")
+                    color="#3052ff",
+                    url=signInData.next.always)
     embed.add_image(image=signInData.refs.qr_png)
 
     await ctx.send(embed=embed, ephemeral=True)
