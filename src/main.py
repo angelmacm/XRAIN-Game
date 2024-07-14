@@ -1,7 +1,8 @@
 from database.db import BattleRoyaleDB
-from components.config import dbConfig, botConfig, coinsConfig, gameConfig
+from components.config import dbConfig, botConfig, coinsConfig, gameConfig, xrplConfig
 from components.logging import loggingInstance
 from components.xummClient import XummClient, XummGetPayloadResponse
+from components.xrplCommands import XRPClient
 
 from components.battles import Battle
 from components.players import Players
@@ -30,6 +31,8 @@ dbInstance = BattleRoyaleDB(
     password=dbConfig['db_password'],
     verbose=dbConfig.getboolean('verbose')
 )
+
+xrplInstance = XRPClient(xrplConfig)
 
 xummInstance = XummClient()
 
@@ -535,6 +538,12 @@ async def battleRoyale(ctx: InteractionContext):
     
     
     await ctx.send(embeds=[winnerImageEmbed, claimEmbed, winnerTextEmbed, statsEmbed])
+    
+    await xrplInstance.sendCoin(address=battleResults['winner'].xrpId,
+                                value=battleInstance.totalWager,
+                                coinHex=coinsConfig['XRAIN'],
+                                memos="XRPL Rainforest Battle Royale Winner!")
+    
     loggingInstance.info(f"/br done") if botVerbosity else None
         
 async def prepareStats(players: list[Players]):
