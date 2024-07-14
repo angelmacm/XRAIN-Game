@@ -502,6 +502,7 @@ async def battleRoyale(ctx: InteractionContext):
         battleResults = await battleInstance.battle()
         await randomWait()
     
+    await postRoundInfo(ctx.channel, battleResults, roundColor = roundColor)
     mostKills, mostDeaths, mostRevives = await prepareStats(battleInstance.players)
     
     winnerEmbedColor = await randomColor()
