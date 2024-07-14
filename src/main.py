@@ -255,10 +255,8 @@ async def chooseNft(ctx: InteractionContext):
                 description= "Number of XRAIN you want to wager",
                 name='xrain-amount',
                 choices=[SlashCommandChoice(name='25', value=25),
-                         SlashCommandChoice(name='50', value=50),
                          SlashCommandChoice(name='100', value=100),
                          SlashCommandChoice(name='250', value=250),
-                         SlashCommandChoice(name='500', value=500),
                          SlashCommandChoice(name='1000', value=1000),
                          ],
                 required=True
