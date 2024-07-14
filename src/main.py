@@ -506,7 +506,7 @@ async def battleRoyale(ctx: InteractionContext):
             
         playerInstance = Players(xrpId=playerInfo['xrpId'],
                                  wager=wager,
-                                 name=escapeMarkdown(users.display_name) if not npc else "XRPL Rainforest Warrior",
+                                 name=escapeMarkdown(users.display_name) if not npc else "XRAIN NPC Warrior",
                                  discordId=users.id if not npc else 0,
                                  boosts=playerInfo['reserveBoosts'],
                                  battleWins=playerInfo['battleWins'],
@@ -531,7 +531,7 @@ async def battleRoyale(ctx: InteractionContext):
     elif len(battleInstance.players) == 1:
         loggingInstance.info(f"Lone joiner, creating NPC") if botVerbosity else None
         await savePlayers(ctx, wager=wager, npc=True)
-        await ctx.channel.send("A XRPL Rainforest Warrior joined!")
+        await ctx.channel.send("A XRAIN NPC Warrior joined!")
     
     for player in battleInstance.players:
         if player is None:
