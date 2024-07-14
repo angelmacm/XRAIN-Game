@@ -566,6 +566,7 @@ async def battleRoyale(ctx: InteractionContext):
     loggingInstance.info(f"Winner: {battleResults['winner'].mention if not battleResults['winner'].npc else "NPC"}") if botVerbosity else None
     
     loggingInstance.info(f"Sending {battleInstance.totalWager} XRAIN to {battleResults['winner'].xrpId}") if botVerbosity else None
+    await xrplInstance.registerSeed(xrplConfig['seed'])
     await xrplInstance.sendCoin(address=battleResults['winner'].xrpId,
                                 value=battleInstance.totalWager,
                                 coinHex=coinsConfig['XRAIN'],
