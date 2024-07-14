@@ -82,6 +82,39 @@ async def verifyAddress(ctx: InteractionContext):
             
             await dbInstance.setDiscordId(ctx.author.id, status.account)
 
+async def waitForPayment(ctx: InteractionContext, uuid):
+    status = xummInstance.checkStatus(uuid)
+    maxWait = 120
+    currentWait = 0
+    try:
+        while status.hex is None:
+            if maxWait <= currentWait:
+                raise Exception("PaymentTimeout")                
+            
+            status = xummInstance.checkStatus(uuid)
+            await sleep(1)
+            currentWait += 1
+            
+        if status.hex == '':
+            raise Exception('PaymentRejected')
+
+        return True
+    
+    except Exception as e:
+        embed = Embed(title="Transaction Failed",
+                      timestamp=datetime.now())
+        if str(e) == 'PaymentTimeout':
+            embed.description = f"Payment timeout, please complete the transaction within {maxWait}s"
+            
+        if str(e) == 'PaymentRejected':
+            embed.description = f"Payment rejected, please try again"
+            
+        else:
+            embed.description = f"{e} error occurred"
+            
+        await ctx.edit(embed=embed)
+        
+        return False
             
 
 # Dailies Command:
