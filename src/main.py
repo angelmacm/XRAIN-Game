@@ -8,7 +8,7 @@ from components.players import Players
 
 from interactions import Intents, Client, listen, InteractionContext, BaseMessage # General discord Interactions import
 from interactions import slash_command, slash_str_option, slash_int_option, File # Slash command imports
-from interactions import Embed, StringSelectMenu, StringSelectOption, SlashCommandChoice
+from interactions import Embed, StringSelectMenu, StringSelectOption, SlashCommandChoice, User
 from interactions.api.events import Component
 
 # Other imports
@@ -353,27 +353,27 @@ async def battleRoyale(ctx: InteractionContext):
     await sleep(ctx.args[0])
     
     playersReactor = await battleCall.fetch_reaction(':crossed_swords:')
-    playersJoined = [users.id for users in playersReactor if users.id != client.app.id]
+    playersJoined = [users for users in playersReactor if users.id != client.app.id]
     
     battleInstance = Battle(dbInstance)
     
     boostQuotes = ""
     
-    async def savePlayers(xrpId, ctx: InteractionContext.channel):
+    async def savePlayers(users: User, ctx: InteractionContext.channel):
         try:
-            playerInfo = await dbInstance.getNFTInfo(xrpId)
+            playerInfo = await dbInstance.getNFTInfo(users.id)
         except:
-            await ctx.send(f"r**{xrpId[-6:]}, not found. Please verify your wallet")
+            await ctx.send(f"{escapeMarkdown(users.display_name)}, not found. Please verify your wallet first")
             return None
             
         
         # Check for xrain for the wager
             
-        playerInstance = Players(xrpId=xrpId,
+        playerInstance = Players(xrpId=playerInfo['xrpId'],
                                  wager=0,
-                                 name=escapeMarkdown(f"*{playerInfo['nftToken'][-6:]}"),
-                                 discordId=0,
-                                 boosts=randint(0,3),
+                                 name=escapeMarkdown(users.display_name),
+                                 discordId=users.id,
+                                 boosts=playerInfo['reserveBoosts'],
                                  battleWins=playerInfo['battleWins'],
                                  tokenId=playerInfo['nftToken'],
                                  nftLink=playerInfo['nftLink'],
