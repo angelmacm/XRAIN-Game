@@ -15,7 +15,7 @@ from interactions.api.events import Component
 # Other imports
 from datetime import datetime
 from random import randint, random
-from asyncio import sleep, gather
+from asyncio import sleep, gather, CancelledError
 from PIL import Image
 import requests
 from io import BytesIO
@@ -186,11 +186,20 @@ async def chooseNft(ctx: InteractionContext):
             componentResult: Component = await client.wait_for_component(components=component, check=check, timeout=60)
             await ctx.defer(ephemeral=True, suppress_error=True)
             await componentResult.ctx.defer(edit_origin=True)
-            return componentResult
-        except:
+            if componentResult.ctx.values is not None:
+                return componentResult
+            else:
+                return None
+        except CancelledError:
+            loggingInstance.info("CancelledError")
             await ctx.send("Timed out in selecting option", ephemeral=True)
             return None
+        except Exception as e:
+            loggingInstance.info("{e} error occurred")
+            await ctx.send(f"", ephemeral=True)
+            return None
             
+    loggingInstance.info(f"componentResult = {componentResult}: {type(componentResult)}")
     componentResult = await waitComponent(nftMenu, ctx)
     
     loggingInstance.info(f"Valid NFT Group Choice: {type(componentResult) == Component}") if botVerbosity else None
