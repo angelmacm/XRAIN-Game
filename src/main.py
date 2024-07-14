@@ -80,7 +80,7 @@ async def verifyAddress(ctx: InteractionContext, register = False):
                           color="#3052ff")
             embed.add_image(image=signInData.refs.qr_png)
 
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, ephemeral=True)
             
             status = await waitForPayment(ctx, signInData.uuid)
             if not status:
@@ -355,7 +355,7 @@ async def getNFT(ctx: InteractionContext):
     try:
         nftInfo = await dbInstance.getNFTInfo(xrpId)
     except:
-        ctx.send("xrpIdNotFound")
+        ctx.send("xrpIdNotFound", ephemeral=True)
         loggingInstance.info(f"xrpIdNotFound") if botVerbosity else None
         return
     
