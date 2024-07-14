@@ -47,10 +47,7 @@ class BattleRoyaleDB:
                     
             if npc:
                 query = query.filter(
-                    RewardsTable.tokenIdBattleNFT != "",
-                    RewardsTable.xrainPower != 0,
-                    RewardsTable.nftlink != "",
-                    RewardsTable.nftGroupName != "",
+                    RewardsTable.xrpId.like("npcPlayer%")
                 ).order_by(func.random()).limit(1)
                     
             sessionResult = await session.execute(query)
