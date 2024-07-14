@@ -242,7 +242,7 @@ async def fillXrainReserves(ctx: InteractionContext):
             await ctx.edit(embed=embed)
             return
     
-    await dbInstance.addXrain(xrpId, fillAmount)
+    await dbInstance.addXrain(discordId, fillAmount)
     
     await ctx.edit(f"Successfully filled {fillAmount} to your reserves", embed={})
     
