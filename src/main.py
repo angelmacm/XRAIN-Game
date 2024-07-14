@@ -72,7 +72,7 @@ async def verifyAddress(ctx: InteractionContext, register = False):
         xrpId = await dbInstance.checkDiscordId(discordId=ctx.author.id)
         return xrpId
     except Exception as e:
-        if str(e) == "RegisterNow":
+        if str(e) == "RegisterNow" or str(e) == "DiscordIdNotFound":
             signInData = xummInstance.createSignIn()
             
             embed = Embed(title='Verify your wallet',
@@ -339,11 +339,16 @@ async def buyBoosts(ctx: InteractionContext):
         name="nft",
         description="See the NFT that you are using for the battle royale!")
 async def getNFT(ctx: InteractionContext):
-    await ctx.defer(ephemeral=False)
+    await ctx.defer(suppress_error=True)
     
     loggingInstance.info(f"/nft called by {ctx.author.display_name}") if botVerbosity else None
     
-    xrpId = await verifyAddress(ctx)
+    try:
+        xrpId = await verifyAddress(ctx)
+        if not xrpId
+    except Exception as e:
+        if str(e) == 'DiscordIdNotFound':
+            await ctx.send("Please verify your wallet first via /choose-nft")
     
     if not xrpId:
         return
