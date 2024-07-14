@@ -339,7 +339,7 @@ async def buyBoosts(ctx: InteractionContext):
         name="nft",
         description="See the NFT that you are using for the battle royale!")
 async def getNFT(ctx: InteractionContext):
-    await ctx.defer(suppress_error=True)
+    await ctx.defer(ephemeral=True, suppress_error=True)
     
     loggingInstance.info(f"/nft called by {ctx.author.display_name}") if botVerbosity else None
     
@@ -347,11 +347,11 @@ async def getNFT(ctx: InteractionContext):
         xrpId = await verifyAddress(ctx)
     except Exception as e:
         if str(e) == 'DiscordIdNotFound':
-            await ctx.send("Please verify your wallet first via /choose-nft")
+            await ctx.send("Please verify your wallet first via /choose-nft", ephemeral=True)
     
     if not xrpId:
         return
-    
+    await ctx.send("Checking your xrpId settings", ephemeral=True)
     try:
         nftInfo = await dbInstance.getNFTInfo(xrpId)
     except:
@@ -385,7 +385,7 @@ async def getNFT(ctx: InteractionContext):
 
     embed.set_image(url=nftInfo['nftLink'])
 
-    await ctx.send(embed=embed)
+    await ctx.send(embed=embed, ephemeral=False)
     loggingInstance.info(f"/nft called by {ctx.author.display_name} success") if botVerbosity else None
     
 @slash_command(
