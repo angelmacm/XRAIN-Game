@@ -237,6 +237,9 @@ async def chooseNft(ctx: InteractionContext):
         ])
 async def fillXrainReserves(ctx: InteractionContext):
     await ctx.defer(ephemeral=True)
+    
+    await verifyAddress(ctx)
+    
     discordId = ctx.author_id
     fillAmount = ctx.kwargs['xrain-amount']
     
@@ -284,6 +287,9 @@ async def fillXrainReserves(ctx: InteractionContext):
         ])
 async def buyBoosts(ctx: InteractionContext):
     await ctx.defer(ephemeral=True)
+    
+    await verifyAddress(ctx)
+    
     authorId = ctx.author_id
     boostAmount = ctx.kwargs['boost-amount']
     xrainPayment = 50 * boostAmount
@@ -590,8 +596,7 @@ async def postRoundInfo(channel:InteractionContext.channel,
     postRoundEmbed.add_field(name="Participants", value=battleResults['participantsNum'], inline=True)
     postRoundEmbed.add_field(name="Dead", value=battleResults['deadNum'], inline=True)
     
-    await channel.send(embed=postRoundEmbed )
-    
+    await channel.send(embed=postRoundEmbed )  
         
 async def fetchImage(url):
     response = requests.get(url)
