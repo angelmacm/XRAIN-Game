@@ -32,6 +32,6 @@ class RewardsTable(Base):
     reserveXRAIN = Column(Integer)
     reserveBoosts = Column(Integer)
     battleWins = Column(Integer)
-    nftGroupName = column_property(Column('NFTGroupName', Integer))
+    nftGroupName = column_property(Column('NFTGroupName', VARCHAR))
     taxonId = Column(Integer)
     discordId = Column(VARCHAR)
