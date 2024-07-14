@@ -268,7 +268,6 @@ async def fillXrainReserves(ctx: InteractionContext):
         
     await ctx.edit(embed=embed)
     
-    
 @slash_command(
         name="buy-boost",
         description="Buy boosts for the battle royale!",
@@ -375,16 +374,24 @@ async def getNFT(ctx: InteractionContext):
                 ],
                 required=True
             ),
-            slash_str_option(
-                name="players",
-                description="Players splitted by comma"
-            )
+            slash_int_option(
+                description="Amount of XRAIN to wager per player",
+                name="wager",
+                choices=[
+                    SlashCommandChoice(name="25", value=25),
+                    SlashCommandChoice(name="50", value=50),
+                    SlashCommandChoice(name="100", value=100),
+                    SlashCommandChoice(name="250", value=250),
+                ],
+                required=True
+            ),
         ])
 async def battleRoyale(ctx: InteractionContext):
     await ctx.defer()
+    wager = ctx.kwargs['wager']
     loggingInstance.info(f"/br called by {ctx.author.display_name}") if botVerbosity else None
     embed = Embed(title="XRPL Rainforest Battle Royale!!",
-                      description="The Battle Royale Horn has sounded by XRPLRainforest Warriors!!\n\nClick the emoji below to answer the call.",
+                      description=f"The Battle Royale Horn has sounded by XRPLRainforest Warriors!!\n\nClick the emoji below to answer the call for **__{wager} XRAIN.__**",
                       timestamp=datetime.now())
 
     file = File('./src/images/XRAIN Battle.png', file_name="xrain_battle.png")
@@ -406,21 +413,27 @@ async def battleRoyale(ctx: InteractionContext):
     
     boostQuotes = ""
     
-    async def savePlayers(ctx: InteractionContext, users: User = None, npc = False):
+    async def savePlayers(ctx: InteractionContext, users: User = None, wager = 0, npc = False):
         try:
             if not npc:
                 playerInfo = await dbInstance.getNFTInfo(users.id)
+                if playerInfo['reserveXrain'] < wager:
+                    raise Exception("insufficientCredits")             
+                await dbInstance.placeWager(playerInfo['xrpId'], wager)
             else:
                 playerInfo = await dbInstance.getNFTInfo(npc=npc)
         except Exception as e:
-            await ctx.channel.send(f"{escapeMarkdown(str(users.id))}, not found. Please verify your wallet first") if users is not None else None
-            return None
-            
+            match str(e):
+                case "xrpIdNotFound":
+                    await ctx.channel.send(f"{users.mention}, not found. Please verify your wallet first") if users is not None else None
+                case "insufficientCredits":
+                    await ctx.channel.send(f"Insufficient  credits for {users.mention}. Please refill your XRAIN reserves") if users is not None else None
+            return None    
         
         # Check for xrain for the wager
             
         playerInstance = Players(xrpId=playerInfo['xrpId'],
-                                 wager=0,
+                                 wager=wager,
                                  name=escapeMarkdown(users.display_name) if not npc else "XRPL Rainforest Warrior",
                                  discordId=users.id if not npc else 0,
                                  boosts=playerInfo['reserveBoosts'],
@@ -428,14 +441,15 @@ async def battleRoyale(ctx: InteractionContext):
                                  tokenId=playerInfo['nftToken'],
                                  nftLink=playerInfo['nftLink'],
                                  taxonId=playerInfo['taxonId'],
-                                 npc=playerInfo['npc'])
+                                 npc=playerInfo['npc'],
+                                 mention=users.mention if not npc else None)
         
         playerInstance.addNFTImage(await fetchImage(playerInstance.nftLink))
         
         battleInstance.join(playerInstance)
         
        
-    coros = [savePlayers(ctx, user) for user in playersJoined]
+    coros = [savePlayers(ctx, user, wager) for user in playersJoined]
     
     await gather(*coros)
     
@@ -443,7 +457,7 @@ async def battleRoyale(ctx: InteractionContext):
         await ctx.send("No one answered the call!")
         return
     elif len(battleInstance.players) == 1:
-        await savePlayers(ctx, npc=True)
+        await savePlayers(ctx, wager=wager, npc=True)
         await ctx.channel.send("A XRPL Rainforest Warrior joined!")
     
     for player in battleInstance.players:
