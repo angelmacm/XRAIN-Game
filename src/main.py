@@ -149,7 +149,7 @@ async def chooseNft(ctx: InteractionContext):
         nftOptions = await dbInstance.getNFTOption(ctx.author.id)
     except Exception as e:
         loggingInstance.error(f"xrpIdNotFound")  if botVerbosity else None
-        await ctx.send("xrpIdNotFound")
+        await ctx.send("xrpIdNotFound", ephemeral=True)
         return
     
     nftMenu = StringSelectMenu(
