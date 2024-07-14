@@ -183,7 +183,7 @@ async def chooseNft(ctx: InteractionContext):
     
     async def waitComponent(component, ctx:InteractionContext) -> Component | None:
         try:
-            componentResult: Component = await client.wait_for_component(components=component, check=check, timeout=30)
+            componentResult: Component = await client.wait_for_component(components=component, check=check, timeout=60)
             await ctx.defer(ephemeral=True, suppress_error=True)
             await componentResult.ctx.defer(edit_origin=True)
             return componentResult
