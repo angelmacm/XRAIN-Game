@@ -89,10 +89,7 @@ async def verifyAddress(ctx: InteractionContext, register = False):
         xrpId = await dbInstance.checkDiscordId(discordId=ctx.author.id)
         return xrpId
     except Exception as e:
-        if (str(e) == "RegisterNow" or str(e) == "DiscordIdNotFound") and register:
-            await register(ctx)
-        else:
-            raise e
+        raise e
         
 
 async def waitForPayment(ctx: InteractionContext, uuid) -> bool | XummGetPayloadResponse:
@@ -267,7 +264,12 @@ async def fillXrainReserves(ctx: InteractionContext):
     await ctx.defer(ephemeral=True)
     loggingInstance.info(f"/fill-xrain-reserve called by {ctx.author.display_name}") if botVerbosity else None
     
-    await verifyAddress(ctx)
+    try:
+        await verifyAddress(ctx)
+    except Exception as e:
+        if str(e) == "DiscordIdNotFound":
+            await ctx.edit(content="XRP ID not found, use /choose-nft to verify your XRP ID")
+            return
     
     discordId = ctx.author_id
     fillAmount = ctx.kwargs['xrain-amount']
@@ -323,7 +325,12 @@ async def buyBoosts(ctx: InteractionContext):
     
     loggingInstance.info(f"/buy-boost called by {ctx.author.display_name}") if botVerbosity else None
     
-    await verifyAddress(ctx)
+    try:
+        await verifyAddress(ctx)
+    except Exception as e:
+        if str(e) == "DiscordIdNotFound":
+            await ctx.edit(content="XRP ID not found, use /choose-nft to verify your XRP ID")
+            return
     
     authorId = ctx.author_id
     boostAmount = ctx.kwargs['boost-amount']
