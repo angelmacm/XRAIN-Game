@@ -465,11 +465,11 @@ async def battleRoyale(ctx: InteractionContext):
             continue 
         
         if player.boosts > 0:
-            boostQuotes += f"**\\@{player.name}** is **100% boosted** and ready!\n"
+            boostQuotes += f"**{player.mention if player.mention is not None else player.name}** is **100% boosted** and ready!\n"
             if not player.npc:
                 await dbInstance.claimBoost(player.xrpId)
         else:
-            boostQuotes += f"**\\@{player.name}** is ready for the battle\n"
+            boostQuotes += f"**{player.mention if player.mention is not None else player.name}** is ready for the battle\n"
     
     await ctx.send(boostQuotes)
     roundColor = await randomColor()
@@ -509,8 +509,8 @@ async def battleRoyale(ctx: InteractionContext):
     
     winnerImageEmbed = Embed(title="XRPLRainforest Battle Royale Winner", color=winnerEmbedColor)
     winnerImageEmbed.set_image(battleResults['winner'].nftLink)
-
-    winnerTextEmbed = Embed(description=f"**{battleResults['winner'].name}** has won the battle royale!\n\nYou've won **__{randint(1,9999)} XRAIN__**!!", color=winnerEmbedColor)
+    
+    winnerTextEmbed = Embed(description=f"**{battleResults['winner'].mention if not battleResults['winner'].npc else battleResults['winner'].name}** has won the battle royale!\n\nYou've won **__{battleInstance.totalWager} XRAIN__**!!", color=winnerEmbedColor)
     winnerTextEmbed.add_field(name="Kills",value=f":knife:{battleResults['winner'].kills}", inline=True)
     winnerTextEmbed.add_field(name="Revives",value=f":wing:{battleResults['winner'].reviveNum}", inline=True)
     
