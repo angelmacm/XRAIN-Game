@@ -143,21 +143,31 @@ class BattleRoyaleDB:
                         )
                 loggingInstance.info(f"addWin({xrpId}): Success") if self.verbose else None
     
-    async def addBoost(self, xrpId, boost):
+    async def addBoost(self, uniqueId, boost):
         async with self.asyncSessionMaker() as session:    
             async with session.begin(): 
                 await session.execute(
-                    update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(reserveBoosts = RewardsTable.reserveBoosts + boost)
+                    update(RewardsTable).where(
+                        or_(
+                            RewardsTable.xrpId == uniqueId,
+                            RewardsTable.discordId == uniqueId
                         )
-                loggingInstance.info(f"addBoost({xrpId}): Success") if self.verbose else None
+                    ).values(reserveBoosts = RewardsTable.reserveBoosts + boost)
+                        )
+                loggingInstance.info(f"addBoost({uniqueId}): Success") if self.verbose else None
                 
-    async def addXrain(self, xrpId, xrain):
+    async def addXrain(self, uniqueId, xrain):
         async with self.asyncSessionMaker() as session:    
             async with session.begin(): 
                 await session.execute(
-                    update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(reserveXRAIN = RewardsTable.reserveXRAIN + xrain)
+                    update(RewardsTable).where(
+                        or_(
+                            RewardsTable.xrpId == uniqueId,
+                            RewardsTable.discordId == uniqueId
                         )
-                loggingInstance.info(f"addXrain({xrpId}): Success") if self.verbose else None
+                    ).values(reserveXRAIN = RewardsTable.reserveXRAIN + xrain)
+                        )
+                loggingInstance.info(f"addXrain({uniqueId}): Success") if self.verbose else None
                 
     async def placeWager(self, xrpId, xrain):
         async with self.asyncSessionMaker() as session:    
