@@ -64,32 +64,33 @@ async def randomColor():
     
     return f"#{randomColorCode}"
 
+async def register(ctx:InteractionContext):
+    signInData = xummInstance.createSignIn()
+            
+    embed = Embed(title='Verify your wallet',
+                    description="Scan the QR Code to verify your wallet",
+                    color="#3052ff")
+    embed.add_image(image=signInData.refs.qr_png)
+
+    await ctx.send(embed=embed, ephemeral=True)
+    
+    status = await waitForPayment(ctx, signInData.uuid)
+    if not status:
+        return False
+    
+    await dbInstance.setDiscordId(ctx.author.id, status.account)
+    return status.account
+
 async def verifyAddress(ctx: InteractionContext, register = False):
     try:
         if register:
-            raise Exception("RegisterNow")
+            await register(ctx)
         
         xrpId = await dbInstance.checkDiscordId(discordId=ctx.author.id)
         return xrpId
     except Exception as e:
         if str(e) == "RegisterNow" or str(e) == "DiscordIdNotFound":
-            signInData = xummInstance.createSignIn()
-            
-            embed = Embed(title='Verify your wallet',
-                          description="Scan the QR Code to verify your wallet",
-                          color="#3052ff")
-            embed.add_image(image=signInData.refs.qr_png)
-
-            await ctx.send(embed=embed, ephemeral=True)
-            
-            status = await waitForPayment(ctx, signInData.uuid)
-            if not status:
-                return False
-            
-            await dbInstance.setDiscordId(ctx.author.id, status.account)
-            return status.account
-        elif str(e) != "DiscordIdNotFound":
-            raise e
+            await register(ctx)
         else:
             raise e
         
