@@ -613,6 +613,7 @@ async def battleRoyale(ctx: InteractionContext):
         
     loggingInstance.info(f"[Round {roundNumber}]: {battleResults['participantsNum']}/{len(battleInstance.players)} alive") if botVerbosity else None
     await postRoundInfo(ctx.channel, battleResults, roundColor = roundColor)
+    await randomWait()
     mostKills, mostDeaths, mostRevives = await prepareStats(battleInstance.players)
     
     winnerEmbedColor = await randomColor()
