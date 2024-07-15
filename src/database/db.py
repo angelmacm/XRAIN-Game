@@ -93,7 +93,7 @@ class BattleRoyaleDB:
                         )
                 loggingInstance.info(f"setNFT({xrpId}, {token}): Success") if self.verbose else None
     
-    async def getNFTOption(self, uniqueId):
+    async def getNFTOption(self, discordID):
         async with self.asyncSessionMaker() as session:     
             query = select(NFTTraitList.tokenId,
                            NFTTraitList.nftlink,
@@ -101,10 +101,7 @@ class BattleRoyaleDB:
                            NFTTraitList.nftGroupName,
                            NFTTraitList.taxonId
                     ).filter(
-                            or_(
-                                RewardsTable.xrpId == uniqueId,
-                                RewardsTable.discordId == uniqueId
-                            ),
+                            RewardsTable.discordId == discordID,
                             NFTTraitList.nftlink != ''
                     ).order_by(
                             NFTTraitList.nftGroupName
@@ -113,7 +110,7 @@ class BattleRoyaleDB:
             queryResult = queryResult.all()
             
             if not queryResult:
-                loggingInstance.Error(f"getNFTOption({uniqueId}): xrpIdNotFound") if self.verbose else None
+                loggingInstance.Error(f"getNFTOption({discordID}): xrpIdNotFound") if self.verbose else None
                 raise Exception("xrpIdNotFound")
             
             nftOptions = {}
@@ -130,7 +127,7 @@ class BattleRoyaleDB:
                 else:
                     nftOptions[nftGroupName] = [entry]
             
-            loggingInstance.info(f"getNFTOption({uniqueId}): success") if self.verbose else None
+            loggingInstance.info(f"getNFTOption({discordID}): success") if self.verbose else None
             
             return nftOptions
         
@@ -219,6 +216,20 @@ class BattleRoyaleDB:
     async def setDiscordId(self, discordId, xrpId):
         async with self.asyncSessionMaker() as session:
             async with session.begin():
+                # Check if there is any xrpId that the discordId is linked to
+                checkQuery = select(RewardsTable.xrpId,RewardsTable.discordId).filter(RewardsTable.discordId == discordId)
+                
+                checkQuery = await session.execute(checkQuery)
+                checkQueryResult = checkQuery.first()
+                
+                if checkQueryResult is not None:
+                    # If there is not, remove the link
+                    loggingInstance.info(f"Discord ID Found, removing...") if self.verbose else None
+                    await session.execute(
+                        update(RewardsTable).where(RewardsTable.xrpId == checkQueryResult[0]).values(discordId = "")
+                        )
+                                
+                # add the Discord ID
                 await session.execute(
                     update(RewardsTable).where(RewardsTable.xrpId == xrpId).values(discordId = discordId)
                         )
