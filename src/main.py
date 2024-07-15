@@ -560,7 +560,7 @@ async def battleRoyale(ctx: InteractionContext):
         battleResults = await battleInstance.battle()
         await randomWait()
         
-    loggingInstance.info(f"[Round {roundNumber}]: {battleResults['participantsNum']/len(battleInstance.players)} alive") if botVerbosity else None
+    loggingInstance.info(f"[Round {roundNumber}]: {battleResults['participantsNum']}/{len(battleInstance.players)} alive") if botVerbosity else None
     await postRoundInfo(ctx.channel, battleResults, roundColor = roundColor)
     mostKills, mostDeaths, mostRevives = await prepareStats(battleInstance.players)
     
