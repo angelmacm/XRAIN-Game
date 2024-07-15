@@ -64,38 +64,10 @@ async def randomColor():
     
     return f"#{randomColorCode}"
 
-async def register(ctx:InteractionContext):
-    signInData = xummInstance.createSignIn()
-            
-    embed = Embed(title='Verify your wallet',
-                    description="Scan the QR Code to verify your wallet",
-                    color="#3052ff",
-                    url=signInData.next.always)
-    embed.add_image(image=signInData.refs.qr_png)
-
-    await ctx.send(embed=embed, ephemeral=True)
-    
-    status = await waitForPayment(ctx, signInData.uuid)
-    if not status:
-        return False
-    
-    await dbInstance.setDiscordId(ctx.author.id, status.account)
-    return status.account
-
-async def verifyAddress(ctx: InteractionContext, registerArg = False):
-    try:
-        if registerArg:
-            await register(ctx)
+async def verifyAddress(discordId):
+    xrpId = await dbInstance.checkDiscordId(discordId=discordId)
+    return xrpId
         
-        xrpId = await dbInstance.checkDiscordId(discordId=ctx.author_id)
-        return xrpId
-    except Exception as e:
-        if str(e) == 'DiscordIdNotFound':
-            if registerArg is None:
-                return await register(ctx)
-        raise e
-        
-
 async def waitForPayment(ctx: InteractionContext, uuid) -> bool | XummGetPayloadResponse:
     status = xummInstance.checkStatus(uuid)
     maxWait = 120
@@ -131,28 +103,43 @@ async def waitForPayment(ctx: InteractionContext, uuid) -> bool | XummGetPayload
         return False
             
 
-# Dailies Command:
+# Battle Verify Command:
+@slash_command(
+        name="battle-verify",
+        description="Verify if you are ready for the battle")
+async def register(ctx:InteractionContext):
+    await ctx.defer(ephemeral=True, suppress_error=True)
+    signInData = xummInstance.createSignIn()
+            
+    embed = Embed(title='Verify your wallet',
+                    description="Scan the QR Code to verify your wallet",
+                    color="#3052ff",
+                    url=signInData.next.always)
+    embed.add_image(image=signInData.refs.qr_png)
+
+    await ctx.send(embed=embed, ephemeral=True)
+    
+    status = await waitForPayment(ctx, signInData.uuid)
+    if not status:
+        return False
+    
+    await dbInstance.setDiscordId(ctx.author.id, status.account)
+    
+    await ctx.send("You have verified your XRP Wallet", ephemeral=True)
+
+# Choose NFT Command:
 # Parameters:
 #       XRP ID: [Required] XRP Address where the users hold their NFTs and the receipient of the reward
 @slash_command(
         name="choose-nft",
-        description="Choose which NFT you want to use for the battle",
-        options=[
-            slash_bool_option(
-                name = "register",
-                description= "Set to true if you want to reregister your xrpId",
-            )
-        ]
+        description="Choose which NFT you want to use for the battle"
         )
 async def chooseNft(ctx: InteractionContext):
     await ctx.defer(ephemeral=True, suppress_error=True) # Defer the response to wait for the function to run.
     loggingInstance.info(f"/choose-nft called by {ctx.author.display_name}")  if botVerbosity else None
-    register = None
-    if 'register' in list(ctx.kwargs.keys()):
-        register = ctx.kwargs['register']      
     
     try:
-        xrpId = await verifyAddress(ctx, registerArg=register)
+        xrpId = await verifyAddress(ctx.author_id)
         
         if not xrpId:
             return
@@ -269,7 +256,7 @@ async def fillXrainReserves(ctx: InteractionContext):
     loggingInstance.info(f"/fill-xrain-reserve called by {ctx.author.display_name}") if botVerbosity else None
     
     try:
-        await verifyAddress(ctx)
+        await verifyAddress(ctx.author_id)
     except Exception as e:
         if str(e) == "DiscordIdNotFound":
             await ctx.edit(content="XRP ID not found, use /choose-nft to verify your XRP ID")
@@ -330,7 +317,7 @@ async def buyBoosts(ctx: InteractionContext):
     loggingInstance.info(f"/buy-boost called by {ctx.author.display_name}") if botVerbosity else None
     
     try:
-        await verifyAddress(ctx)
+        await verifyAddress(ctx.author_id)
     except Exception as e:
         if str(e) == "DiscordIdNotFound":
             await ctx.edit(content="XRP ID not found, use /choose-nft to verify your XRP ID")
@@ -375,7 +362,7 @@ async def getNFT(ctx: InteractionContext):
     loggingInstance.info(f"/nft called by {ctx.author.display_name}") if botVerbosity else None
     
     try:
-        xrpId = await verifyAddress(ctx)
+        xrpId = await verifyAddress(ctx.author_id)
         if not xrpId:
             return
     except Exception as e:
