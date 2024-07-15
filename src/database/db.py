@@ -105,7 +105,7 @@ class BattleRoyaleDB:
                             NFTTraitList.nftlink != ''
                     ).order_by(
                             NFTTraitList.nftGroupName
-                    ).order_by(NFTTraitList.totalXRAIN.desc())
+                    ).order_by(NFTTraitList.totalXRAIN.desc()).join(RewardsTable, RewardsTable.xrpId == NFTTraitList.xrpId)
             queryResult = await session.execute(query)
             queryResult = queryResult.all()
             
