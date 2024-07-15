@@ -120,7 +120,7 @@ class BattleRoyaleDB:
             
             for row in queryResult:
                 tokenId, nftLink, totalXrain, nftGroupName, taxonId = row
-                entry = {"tokenId": tokenId, 'nftLink': nftLink, 'totalXrain': totalXrain, 'taxonId': taxonId, 'label': f"{nftGroupName} *{tokenId[-6:]} | XRAIN: :battery:{totalXrain}"}
+                entry = {"tokenId": tokenId, 'nftLink': nftLink, 'totalXrain': totalXrain, 'taxonId': taxonId, 'label': f"{nftGroupName} *{tokenId[-6:]} | XRAIN {totalXrain}"}
                 
                 if not len(nftGroupName):
                     continue
