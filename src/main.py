@@ -485,7 +485,6 @@ async def getNFT(ctx: InteractionContext):
                     SlashCommandChoice(name="25", value=25),
                     SlashCommandChoice(name="50", value=50),
                     SlashCommandChoice(name="100", value=100),
-                    SlashCommandChoice(name="250", value=250),
                 ],
                 required=True
             ),
