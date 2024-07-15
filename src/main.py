@@ -198,7 +198,7 @@ async def chooseNft(ctx: InteractionContext):
         start = page * items_per_page
         end = start + items_per_page
         group_options = [
-            StringSelectOption(label=item['label'], value=f"{index},{chosen_group}")
+            StringSelectOption(label=item['label'], value=f"{start+index},{chosen_group}")
             for index, item in enumerate(nftOptions[chosen_group][start:end])
         ]
         return group_options
