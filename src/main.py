@@ -406,7 +406,7 @@ async def getNFT(ctx: InteractionContext):
                     value=str(nftInfo['xrainPower']),
                     inline=True)
     embed.add_field(name="Booster Multiplier",
-                    value=f"100%\nEffective XRAIN Power:\n{int(nftInfo['xrainPower'])*2}",
+                    value=f"100%\nEffective XRAIN Power:\n{int(nftInfo['xrainPower'])*(2 if int(nftInfo['reserveBoosts']) > 0 else 1)}",
                     inline=True)
     embed.add_field(name="Active Booster",
                     value="Yes" if int(nftInfo['reserveBoosts']) > 0 else "No",
