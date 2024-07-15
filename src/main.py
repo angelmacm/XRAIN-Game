@@ -181,7 +181,7 @@ async def chooseNft(ctx: InteractionContext):
         disabled=True
     )
     
-    await ctx.send("Select NFT", components=[nftMenu])
+    await ctx.send("Select NFT", components=[nftMenu], ephemeral=True)
     
     def check(component: Component):
         if component.ctx.author_id == ctx.author_id:
