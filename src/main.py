@@ -182,7 +182,7 @@ async def chooseNft(ctx: InteractionContext):
             return component_result
         except Exception as e:
             loggingInstance.info(f"{e} error occurred")
-            await ctx.send(f"Timed out in selecting option", ephemeral=True)
+            await ctx.edit(content=f"Timed out in selecting option", components={})
             return None
     
     component_result: Component = await wait_component([nftMenu, groupMenu], ctx)
