@@ -2,6 +2,7 @@ from components.players import Players
 from components.config import gameConfig
 from random import randint
 from database.db import BattleRoyaleDB 
+from components.logging import loggingInstance
 
 class Battle:
     def __init__(self, dbInstance: BattleRoyaleDB):
@@ -97,6 +98,8 @@ class Battle:
             if quoteCategory not in ['Neutral', "Revival"]:
                 playerTwo = self.__randomUniqueUser()
                 quoteDescription = quoteDescription.replace("$Player2",f"**{playerTwo.name}**")
+            
+            loggingInstance.info(f"Matching category: {quoteCategory}")
             
             match quoteCategory:
                 
