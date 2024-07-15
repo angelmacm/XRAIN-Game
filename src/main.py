@@ -8,7 +8,7 @@ from components.battles import Battle
 from components.players import Players
 
 from interactions import Intents, Client, listen, InteractionContext, BaseMessage # General discord Interactions import
-from interactions import slash_command, slash_str_option, slash_int_option, File # Slash command imports
+from interactions import slash_command, slash_str_option, slash_int_option, File, ActionRow # Slash command imports
 from interactions import Embed, StringSelectMenu, StringSelectOption, SlashCommandChoice, User, slash_bool_option
 from interactions.api.events import Component
 
@@ -154,85 +154,85 @@ async def chooseNft(ctx: InteractionContext):
         return
     
     nftMenu = StringSelectMenu(
-        list(nftOptions.keys()),
+        [StringSelectOption(label=key, value=key) for key in nftOptions.keys()],
         custom_id='groupSelection',
-        placeholder="NFT Group Selection"
+        placeholder="NFT Group Selection",
     )
     
     groupMenu = StringSelectMenu(
-        'placeholder',
+        [StringSelectOption(label='placeholder', value='placeholder')],
         custom_id='nftSelection',
         placeholder="NFT Selection",
         disabled=True
     )
     
-    await ctx.send("Select NFT", components=[nftMenu], ephemeral=True)
+    selectOne = ActionRow()
+    selectTwo = ActionRow()
+    selectOne.add_component(nftMenu)
+    selectTwo.add_component(groupMenu)
+    await ctx.send("Select NFT", components=[selectOne, selectTwo], ephemeral=True)
     
     def check(component: Component):
-        if component.ctx.author_id == ctx.author_id:
-            return True
-        return False
+        return component.ctx.author_id == ctx.author.id
     
-    async def waitComponent(component, ctx:InteractionContext) -> Component | None:
+    async def wait_component(components, ctx: InteractionContext) -> Component | None:
         try:
-            componentResult: Component = await client.wait_for_component(components=component, check=check, timeout=120)
-            await ctx.defer(ephemeral=True, suppress_error=True)
-            await componentResult.ctx.defer(edit_origin=True)
-            return componentResult
-
+            component_result: Component = await client.wait_for_component(components=components, check=check, timeout=120)
+            await component_result.ctx.defer(edit_origin=True)
+            return component_result
         except Exception as e:
-            loggingInstance.info("{e} error occurred")
+            loggingInstance.info(f"{e} error occurred")
             await ctx.send(f"Timed out in selecting option", ephemeral=True)
             return None
-            
-    componentResult = await waitComponent(nftMenu, ctx)
     
-    loggingInstance.info(f"Valid NFT Group Choice: {type(componentResult) == Component}") if botVerbosity else None
+    component_result: Component = await wait_component([nftMenu, groupMenu], ctx)
     
-    if not componentResult or componentResult is None:
-        return
-    
-    chosenGroup = componentResult.ctx.values[0]
-    groupOptions = []
-    index = 0
-    
-    for item in nftOptions[chosenGroup]:
-        groupOptions.append(StringSelectOption(
-            label=item['label'],
-            value=index
-        ))
-        index += 1
-        if len(groupOptions) == 25:
-            break
-    
-    groupMenu.options = groupOptions
-    groupMenu.disabled = False
+    while component_result:
+        if component_result.ctx.custom_id == 'groupSelection':
+            chosen_group = component_result.ctx.values[0]
+            group_options = [
+                StringSelectOption(label=item['label'], value=f"{index},{chosen_group}")
+                for index, item in enumerate(nftOptions[chosen_group])
+            ][:25]
+            groupMenu.options = group_options
+            groupMenu.disabled = False
+            nftMenu.placeholder = chosen_group
+            selectOne = ActionRow()
+            selectTwo = ActionRow()
+            selectOne.add_component(nftMenu)
+            selectTwo.add_component(groupMenu)
+            await ctx.edit(content=f"Select NFT from {chosen_group} group", components=[selectOne, selectTwo])
+        elif component_result.ctx.custom_id == 'nftSelection':
+            chosen_group = None
+            for option in nftMenu.options:
+                index, groupName = component_result.ctx.values[0].split(",")
+                if option.value == groupName:
+                    chosen_group = option.value
+                    break
+
+            if not chosen_group:
+                await ctx.send("Error: Selected group not found", ephemeral=True)
+                return
+
+            chosen_nft = nftOptions[chosen_group][int(component_result.ctx.values[0].split(",")[0])]
+            await dbInstance.setNFT(
+                xrpId=xrpId,
+                token=chosen_nft['tokenId'],
+                nftLink=chosen_nft['nftLink'],
+                xrainPower=chosen_nft['totalXrain'],
+                taxonId=chosen_nft['taxonId'],
+                groupName=chosen_group
+            )
+            embed = Embed(
+                title="Chosen NFT",
+                description=f"{chosen_nft['label']}\n\n[View NFT Details](https://xrp.cafe/nft/{chosen_nft['tokenId']})"
+            )
+            embed.set_image(url=chosen_nft['nftLink'])
+            await ctx.edit(content="", components=[], embed=embed)
+            loggingInstance.info(f"NFT Choice: {chosen_nft['label']}") if botVerbosity else None
+            return
         
-    await ctx.edit(content=f"Select NFT from {chosenGroup} group",components=groupMenu)
-    
-    result = await waitComponent(groupMenu, ctx)
-    
-    if not result or result is None:
-        return
-    
-    loggingInstance.info(f"Valid NFT Choice: {type(result) == Component}") if botVerbosity else None 
-    
-    chosenNFT = int(result.ctx.values[0])
-    chosenNFT = nftOptions[chosenGroup][chosenNFT]
-    
-    await dbInstance.setNFT(xrpId=xrpId,
-                            token=chosenNFT['tokenId'],
-                            nftLink=chosenNFT['nftLink'],
-                            xrainPower=chosenNFT['totalXrain'],
-                            taxonId=chosenNFT['taxonId'],
-                            groupName=chosenGroup)
-    
-    embed = Embed(title="Chosen NFT",
-                  description=f"{chosenNFT['label']}\n\n[View NFT Details](https://xrp.cafe/nft/{chosenNFT['tokenId']})")
-    embed.add_image(chosenNFT['nftLink'])
-    await ctx.edit(content=f"", components=[], embed=embed)
-    
-    loggingInstance.info(f"NFT Choice: {chosenNFT['label']}") if botVerbosity else None
+        component_result = await wait_component([nftMenu, groupMenu], ctx)
     
 @slash_command(
         name="fill-xrain-reserve",
