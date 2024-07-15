@@ -128,8 +128,6 @@ async def register(ctx:InteractionContext):
     await ctx.send("You have verified your XRP Wallet", ephemeral=True)
 
 # Choose NFT Command:
-# Parameters:
-#       XRP ID: [Required] XRP Address where the users hold their NFTs and the receipient of the reward
 @slash_command(
         name="choose-nft",
         description="Choose which NFT you want to use for the battle"
@@ -145,7 +143,7 @@ async def chooseNft(ctx: InteractionContext):
             return
     except Exception as e:
         if str(e) == "DiscordIdNotFound":
-            await ctx.send("XRP ID not found, please do not set register to False.")
+            await ctx.send("XRP Wallet not found, use /battle-verify to verify your XRP Wallet")
             return
     
     try:
@@ -259,7 +257,7 @@ async def fillXrainReserves(ctx: InteractionContext):
         await verifyAddress(ctx.author_id)
     except Exception as e:
         if str(e) == "DiscordIdNotFound":
-            await ctx.edit(content="XRP ID not found, use /choose-nft to verify your XRP ID")
+            await ctx.edit(content="XRP Wallet not found, use /battle-verify to verify your XRP Wallet")
             return
     
     discordId = ctx.author_id
@@ -320,7 +318,7 @@ async def buyBoosts(ctx: InteractionContext):
         await verifyAddress(ctx.author_id)
     except Exception as e:
         if str(e) == "DiscordIdNotFound":
-            await ctx.edit(content="XRP ID not found, use /choose-nft to verify your XRP ID")
+            await ctx.edit(content="XRP Wallet not found, use /battle-verify to verify your XRP Wallet")
             return
     
     authorId = ctx.author_id
@@ -367,7 +365,7 @@ async def getNFT(ctx: InteractionContext):
             return
     except Exception as e:
         if str(e) == 'DiscordIdNotFound':
-            await ctx.send("Please verify your wallet first via /choose-nft", ephemeral=True)
+            await ctx.send("XRP Wallet not found, use /battle-verify to verify your XRP Wallet", ephemeral=True)
             return
         await ctx.send(f"{e} error occurred", ephemeral=True)
         return
@@ -381,7 +379,7 @@ async def getNFT(ctx: InteractionContext):
         return
     
     if nftInfo['nftToken'] == "":
-        await ctx.edit(content="Battle NFT not found, use /choose-nft to verify your xrp ID")
+        await ctx.edit(content="Battle NFT not found, use /choose-nft to choose your Battle NFT")
         return
     
     embed = Embed(title=f"Battle NFT: {nftInfo['nftGroupName']} ***{nftInfo['nftToken'][-6:]}**",
@@ -483,7 +481,7 @@ async def battleRoyale(ctx: InteractionContext):
             match str(e):
                 case "xrpIdNotFound":
                     loggingInstance.error(f"xrpIdNotFound") if botVerbosity else None
-                    await ctx.channel.send(f"{users.mention}, not found. Please verify your wallet first") if users is not None else None
+                    await ctx.channel.send(f"{users.mention}, not found. Please verify your wallet first via /battle-verify") if users is not None else None
                 case "insufficientCredits":
                     loggingInstance.error(f"{users.id} insufficient credit") if botVerbosity else None
                     await ctx.channel.send(f"Insufficient  credits for {users.mention}. Please refill your XRAIN reserves") if users is not None else None
