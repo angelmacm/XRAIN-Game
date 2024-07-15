@@ -8,8 +8,8 @@ from components.battles import Battle
 from components.players import Players
 
 from interactions import Intents, Client, listen, InteractionContext, BaseMessage # General discord Interactions import
-from interactions import slash_command, slash_str_option, slash_int_option, File, ActionRow # Slash command imports
-from interactions import Embed, StringSelectMenu, StringSelectOption, SlashCommandChoice, User, slash_bool_option
+from interactions import slash_command, Button, slash_int_option, File, ActionRow # Slash command imports
+from interactions import Embed, StringSelectMenu, StringSelectOption, SlashCommandChoice, User, ButtonStyle
 from interactions.api.events import Component
 
 # Other imports
@@ -170,8 +170,14 @@ async def chooseNft(ctx: InteractionContext):
     selectTwo = ActionRow()
     selectOne.add_component(nftMenu)
     selectTwo.add_component(groupMenu)
-    await ctx.send("Select NFT", components=[selectOne, selectTwo], ephemeral=True)
+    latestMessage = await ctx.send("Select NFT", components=[selectOne, selectTwo], ephemeral=True)
     
+    previous_button = Button(style=ButtonStyle.GREEN, label="Previous", custom_id="previous", disabled=True)
+    next_button = Button(style=ButtonStyle.GREEN, label="Next", custom_id="next", disabled=True)
+    pagination_row = ActionRow()
+    pagination_row.add_component(previous_button)
+    pagination_row.add_component(next_button)
+     
     def check(component: Component):
         return component.ctx.author_id == ctx.author.id
     
@@ -185,23 +191,35 @@ async def chooseNft(ctx: InteractionContext):
             await ctx.edit(content=f"Timed out in selecting option", components={})
             return None
     
-    component_result: Component = await wait_component([nftMenu, groupMenu], ctx)
+    page = 0
+    items_per_page = 25
     
+    def update_group_menu_options(nftOptions, chosen_group, page):
+        start = page * items_per_page
+        end = start + items_per_page
+        group_options = [
+            StringSelectOption(label=item['label'], value=f"{index},{chosen_group}")
+            for index, item in enumerate(nftOptions[chosen_group][start:end])
+        ]
+        return group_options
+    
+    component_result: Component = await wait_component([nftMenu, groupMenu, pagination_row], ctx)
+
     while component_result:
         if component_result.ctx.custom_id == 'groupSelection':
             chosen_group = component_result.ctx.values[0]
-            group_options = [
-                StringSelectOption(label=item['label'], value=f"{index},{chosen_group}")
-                for index, item in enumerate(nftOptions[chosen_group])
-            ][:25]
-            groupMenu.options = group_options
+            groupMenu.options = update_group_menu_options(nftOptions, chosen_group, page)
             groupMenu.disabled = False
             nftMenu.placeholder = chosen_group
             selectOne = ActionRow()
             selectTwo = ActionRow()
             selectOne.add_component(nftMenu)
             selectTwo.add_component(groupMenu)
-            await ctx.edit(content=f"Select NFT from {chosen_group} group", components=[selectOne, selectTwo])
+            previous_button.disabled = True
+            next_button.disabled = len(nftOptions[chosen_group]) <= items_per_page
+            components = [selectOne, selectTwo]
+            components.append(pagination_row) if not next_button.disabled else None
+            latestMessage = await ctx.edit(content=f"Select NFT from {chosen_group} group", components=components)
         elif component_result.ctx.custom_id == 'nftSelection':
             chosen_group = None
             for option in nftMenu.options:
@@ -228,11 +246,45 @@ async def chooseNft(ctx: InteractionContext):
                 description=f"{chosen_nft['label']}\n\n[View NFT Details](https://xrp.cafe/nft/{chosen_nft['tokenId']})"
             )
             embed.set_image(url=chosen_nft['nftLink'])
-            await ctx.edit(content="", components=[], embed=embed)
+            latestMessage = await ctx.edit(content="", components=[], embed=embed)
             loggingInstance.info(f"NFT Choice: {chosen_nft['label']}") if botVerbosity else None
             return
+        elif component_result.ctx.custom_id == 'previous':
+            page -= 1
+            groupMenu.options = update_group_menu_options(nftOptions, chosen_group, page)
+            groupMenu.disabled = False
+            previous_button.disabled = page == 0
+            next_button.disabled = False
+            
+            components = latestMessage.components[0:-2]
+            specificNFT = ActionRow()
+            specificNFT.add_component(groupMenu)
+            components.append(specificNFT)
+            pagination_row = ActionRow()
+            pagination_row.add_component(previous_button)
+            pagination_row.add_component(next_button)
+            components.append(pagination_row)
+            latestMessage = await ctx.edit(content=f"Select NFT from {chosen_group} group", components=components)
         
-        component_result = await wait_component([nftMenu, groupMenu], ctx)
+        elif component_result.ctx.custom_id == 'next':
+            page += 1
+            groupMenu.options = update_group_menu_options(nftOptions, chosen_group, page)
+            
+            groupMenu.disabled = False
+            previous_button.disabled = False
+            next_button.disabled = (page + 1) * items_per_page >= len(nftOptions[chosen_group])
+            
+            components = latestMessage.components[0:-2]
+            specificNFT = ActionRow()
+            specificNFT.add_component(groupMenu)
+            components.append(specificNFT)
+            pagination_row = ActionRow()
+            pagination_row.add_component(previous_button)
+            pagination_row.add_component(next_button)
+            components.append(pagination_row)
+            latestMessage = await ctx.edit(content=f"Select NFT from {chosen_group} group", components=components)
+        
+        component_result = await wait_component([nftMenu, groupMenu, pagination_row], ctx)
     
 @slash_command(
         name="fill-xrain-reserve",
