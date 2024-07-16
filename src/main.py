@@ -436,7 +436,7 @@ async def getNFT(ctx: InteractionContext):
     
     embed = Embed(title=f"Battle NFT: {nftInfo['nftGroupName']} ***{nftInfo['nftToken'][-6:]}**",
                   url=f"https://xrp.cafe/nft/{nftInfo['nftToken']}",
-                  description=f"{ctx.author.display_name} won **__{nftInfo['battleWins']}__** times!",
+                  description=f"{ctx.author.display_name} won **__{nftInfo['battleWins']}__** times! :crossed_swords:",
                   color=await randomColor())
 
     embed.add_field(name="Battle Royale Rank",
@@ -652,11 +652,11 @@ async def battleRoyale(ctx: InteractionContext):
     
     if not battleResults['winner'].npc:
         loggingInstance.info(f"Sending {battleInstance.totalWager} XRAIN to {battleResults['winner'].xrpId}") if botVerbosity else None
-        # await xrplInstance.registerSeed(xrplConfig['seed'])
-        # await xrplInstance.sendCoin(address=battleResults['winner'].xrpId,
-        #                             value=battleInstance.totalWager,
-        #                             coinHex=coinsConfig['XRAIN'],
-        #                             memos="XRPL Rainforest Battle Royale Winner!")
+        await xrplInstance.registerSeed(xrplConfig['seed'])
+        await xrplInstance.sendCoin(address=battleResults['winner'].xrpId,
+                                    value=battleInstance.totalWager,
+                                    coinHex=coinsConfig['XRAIN'],
+                                    memos="XRPL Rainforest Battle Royale Winner!")
     
     loggingInstance.info(f"/br success") if botVerbosity else None
         
