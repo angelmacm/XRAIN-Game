@@ -523,6 +523,10 @@ async def battleRoyale(ctx: InteractionContext):
         try:
             if not npc:
                 playerInfo = await dbInstance.getNFTInfo(users.id)
+                
+                if playerInfo['nftLink'] == '':
+                    raise Exception("BattleNFTNotFound")
+                
                 if playerInfo['reserveXrain'] < wager:
                     raise Exception("insufficientCredits")             
                 await dbInstance.placeWager(playerInfo['xrpId'], wager)
@@ -536,6 +540,10 @@ async def battleRoyale(ctx: InteractionContext):
                 case "insufficientCredits":
                     loggingInstance.error(f"{users.id} insufficient credit") if botVerbosity else None
                     await ctx.channel.send(f"Insufficient  credits for {users.mention}. Please refill your XRAIN reserves") if users is not None else None
+                case "BattleNFTNotFound":
+                    loggingInstance.error(f"{users.id} battle nft not found") if botVerbosity else None
+                    await ctx.channel.send(f"Battle NFT not found for {users.mention}. Please set your NFT via /choose-nft") if users is not None else None
+            
             return None    
         
         # Check for xrain for the wager
