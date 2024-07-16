@@ -101,30 +101,30 @@ class Battle:
             
             loggingInstance.info(f"Matching category: {quoteCategory}")
             
-            match quoteCategory:
+            match str(quoteCategory).lower():
                 
                 # Kill the lower wins
-                case "High RANK kill":
+                case "high rank kill":
                     playerToKill = playerOne if playerOne.battleWins < playerTwo.battleWins else playerTwo
                     
                 # Kill the lower power
-                case "High XRAIN kill":
+                case "high xrain kill":
                     playerToKill = playerOne if playerOne.xrainPower < playerTwo.xrainPower else playerTwo
                     
                 # Kill the higher power 
-                case "Low XRAIN kill":
+                case "low xrain kill":
                     playerToKill = playerTwo if playerOne.xrainPower < playerTwo.xrainPower else playerOne
                 
                 # Kill randomly
-                case "Normal Kill":
+                case "normal kill":
                     playerToKill = playerOne
                 
                 # No one dies
-                case "Neutral":
+                case "neutral":
                     quoteDescription += "| :peace:"
                     pass      
                 
-                case "Revival":
+                case "revival":
                     quoteDescription += "| :innocent:"
                     playerOne.revive()  
 
