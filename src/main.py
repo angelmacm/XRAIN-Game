@@ -436,9 +436,12 @@ async def getNFT(ctx: InteractionContext):
     
     embed = Embed(title=f"Battle NFT: {nftInfo['nftGroupName']} ***{nftInfo['nftToken'][-6:]}**",
                   url=f"https://xrp.cafe/nft/{nftInfo['nftToken']}",
-                  description=f"You've won **__{nftInfo['battleWins']}__** times!",
+                  description=f"{ctx.author.display_name} won **__{nftInfo['battleWins']}__** times!",
                   color=await randomColor())
 
+    embed.add_field(name="Battle Royale Rank",
+                    value= nftInfo['battleRank'],
+                    inline=True)
     embed.add_field(name="XRAIN power",
                     value=str(nftInfo['xrainPower']),
                     inline=True)
@@ -453,9 +456,6 @@ async def getNFT(ctx: InteractionContext):
                     inline=True)
     embed.add_field(name="XRAIN Reserves",
                     value=str(nftInfo['reserveXrain']),
-                    inline=True)
-    embed.add_field(name="Battle Royale Rank",
-                    value= nftInfo['battleRank'],
                     inline=True)
 
     embed.set_image(url=nftInfo['nftLink'])
@@ -652,11 +652,11 @@ async def battleRoyale(ctx: InteractionContext):
     
     if not battleResults['winner'].npc:
         loggingInstance.info(f"Sending {battleInstance.totalWager} XRAIN to {battleResults['winner'].xrpId}") if botVerbosity else None
-        await xrplInstance.registerSeed(xrplConfig['seed'])
-        await xrplInstance.sendCoin(address=battleResults['winner'].xrpId,
-                                    value=battleInstance.totalWager,
-                                    coinHex=coinsConfig['XRAIN'],
-                                    memos="XRPL Rainforest Battle Royale Winner!")
+        # await xrplInstance.registerSeed(xrplConfig['seed'])
+        # await xrplInstance.sendCoin(address=battleResults['winner'].xrpId,
+        #                             value=battleInstance.totalWager,
+        #                             coinHex=coinsConfig['XRAIN'],
+        #                             memos="XRPL Rainforest Battle Royale Winner!")
     
     loggingInstance.info(f"/br success") if botVerbosity else None
         
