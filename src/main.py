@@ -401,7 +401,11 @@ async def buyBoosts(ctx: InteractionContext):
     
     await dbInstance.addBoost(uniqueId=authorId, boost=boostAmount)
     
-    await ctx.send(f"You have successfully bought {boostAmount} boosts! Now pay {xrainPayment} XRAIN")
+    embed = Embed(title="Transaction Success",
+                          description=f"Successfully bought {boostAmount} boosts",
+                          timestamp=datetime.now())
+        
+    await ctx.edit(embed=embed)
     
 @slash_command(
         name="nft",
