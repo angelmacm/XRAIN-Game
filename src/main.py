@@ -297,6 +297,8 @@ async def chooseNft(ctx: InteractionContext):
                          SlashCommandChoice(name='250', value=250),
                          SlashCommandChoice(name='500', value=500),
                          SlashCommandChoice(name='1000', value=1000),
+                         SlashCommandChoice(name='3000', value=3000),
+                         SlashCommandChoice(name='5000', value=5000),
                          ],
                 required=True
             )
@@ -357,6 +359,8 @@ async def fillXrainReserves(ctx: InteractionContext):
                 choices=[SlashCommandChoice(name='3 Boost = 150 XRAIN', value=3),
                          SlashCommandChoice(name='10 Boost = 500 XRAIN', value=10),
                          SlashCommandChoice(name='20 Boost = 1000 XRAIN', value=20),
+                         SlashCommandChoice(name='30 Boost = 1500 XRAIN', value=30),
+                         SlashCommandChoice(name='50 Boost = 2500 XRAIN', value=50),
                          ],
                 required=True
             )
