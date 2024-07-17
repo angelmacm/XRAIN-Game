@@ -101,7 +101,7 @@ class Battle:
             
             loggingInstance.info(f"Matching category: {quoteCategory}")
             
-            match str(quoteCategory).lower():
+            match str(quoteCategory).lower().strip():
                 
                 # Kill the lower wins
                 case "high rank kill":
