@@ -438,7 +438,7 @@ async def getNFT(ctx: InteractionContext):
         loggingInstance.info(f"xrpIdNotFound") if botVerbosity else None
         return
     
-    if nftInfo['nftToken'] == "":
+    if nftInfo['nftToken'] == "" or nftInfo['nftLink'] == "":
         await ctx.edit(content="Battle NFT not found, use /choose-nft to choose your Battle NFT")
         return
     
