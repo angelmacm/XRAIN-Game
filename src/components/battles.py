@@ -92,12 +92,12 @@ class Battle:
                 while quoteCategory != 'Neutral':
                     quoteCategory, quoteDescription = await self.dbInstance.getRandomQuote()
                     
-            # Replace the player name to the format
-            quoteDescription:str = quoteDescription.replace("$Player1", f"**{playerOne.name}**")
             
             if quoteCategory not in ['Neutral', "Revival"]:
                 playerTwo = self.__randomUniqueUser()
-                quoteDescription = quoteDescription.replace("$Player2",f"**{playerTwo.name}**")
+            else:
+                # Replace the player name to the format if it is Neutral or Revival
+                quoteDescription:str = quoteDescription.replace("$Player1", f"**{playerOne.name}**")
             
             loggingInstance.info(f"Matching category: {quoteCategory}")
             
@@ -129,8 +129,12 @@ class Battle:
                     playerOne.revive()  
 
             if quoteCategory not in ['Neutral', "Revival"]:
-                playerOne.addKill() if playerOne != playerToKill else playerOne.kill()
-                playerTwo.addKill() if playerTwo != playerToKill else playerTwo.kill()
+                playerDead = playerOne if playerOne == playerToKill else playerTwo
+                playerAlive = playerOne if playerOne != playerToKill else playerTwo
+                playerDead.kill()
+                playerAlive.addKill()
+                quoteDescription = quoteDescription.replace("$Player2",f"**{playerDead.name}**")
+                quoteDescription = quoteDescription.replace("$Player1",f"**{playerAlive.name}**")
                 quoteDescription += "| :skull_crossbones:"
             
             quotesList.append(quoteDescription)
@@ -147,4 +151,3 @@ class Battle:
         returnBody['nftLinks'] = [player.nftLink for player in remainingAlive]
         
         return returnBody
-        
