@@ -105,28 +105,40 @@ class Battle:
                 
                 # Kill the lower wins
                 case "high rank kill":
+                    loggingInstance.info("Matched: High Rank Kill")
                     playerToKill = playerOne if playerOne.battleWins < playerTwo.battleWins else playerTwo
                     
                 # Kill the lower power
                 case "high xrain kill":
+                    loggingInstance.info("Matched: High XRAIN Kill")
                     playerToKill = playerOne if playerOne.xrainPower < playerTwo.xrainPower else playerTwo
                     
                 # Kill the higher power 
                 case "low xrain kill":
+                    loggingInstance.info("Matched: Low XRAIN Kill")
                     playerToKill = playerTwo if playerOne.xrainPower < playerTwo.xrainPower else playerOne
                 
                 # Kill randomly
                 case "normal kill":
+                    loggingInstance.info("Matched: Normal Kill")
                     playerToKill = playerOne
                 
                 # No one dies
                 case "neutral":
+                    loggingInstance.info("Matched: Neutral")
                     quoteDescription += "| :peace:"
                     pass      
                 
                 case "revival":
+                    loggingInstance.info("Matched: Revival")
                     quoteDescription += "| :innocent:"
                     playerOne.revive()  
+                
+                case _:
+                    loggingInstance.error(f"Case Matching failed on [{str(quoteCategory).lower()}]")
+                    loggingInstance.error(f"wins: {'playerOne' if playerOne.battleWins < playerTwo.battleWins else 'playerTwo'}")
+                    loggingInstance.error(f"High: {'playerOne' if playerOne.xrainPower < playerTwo.xrainPower else 'playerTwo'}")
+                    loggingInstance.error(f"Low: {'playerTwo' if playerOne.xrainPower < playerTwo.xrainPower else 'playerOne'}")
 
             if quoteCategory not in ['Neutral', "Revival"]:
                 playerDead = playerOne if playerOne == playerToKill else playerTwo
