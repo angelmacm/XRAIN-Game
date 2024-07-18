@@ -555,6 +555,8 @@ async def battleRoyale(ctx: InteractionContext):
             return None    
         
         # Check for xrain for the wager
+        
+        totalBoost  = int(playerInfo['xrainPower']) * (2 if player.boosts > 0 else 1)
             
         playerInstance = Players(xrpId=playerInfo['xrpId'],
                                  wager=wager,
@@ -566,7 +568,8 @@ async def battleRoyale(ctx: InteractionContext):
                                  nftLink=playerInfo['nftLink'],
                                  taxonId=playerInfo['taxonId'],
                                  npc=playerInfo['npc'],
-                                 mention=users.mention if not npc else None)
+                                 mention=users.mention if not npc else None,
+                                 xrainPower=totalBoost)
         
         playerInstance.addNFTImage(await fetchImage(playerInstance.nftLink))
         
