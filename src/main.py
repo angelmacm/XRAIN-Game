@@ -556,7 +556,7 @@ async def battleRoyale(ctx: InteractionContext):
         
         # Check for xrain for the wager
         
-        totalBoost  = int(playerInfo['xrainPower']) * (2 if player.boosts > 0 else 1)
+        totalBoost  = int(playerInfo['xrainPower']) * (2 if int(playerInfo['reserveBoosts']) > 0 else 1)
             
         playerInstance = Players(xrpId=playerInfo['xrpId'],
                                  wager=wager,
