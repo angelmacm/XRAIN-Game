@@ -121,7 +121,7 @@ class Battle:
                 # Kill randomly
                 case "normal kill":
                     loggingInstance.info("Matched: Normal Kill")
-                    playerToKill = playerOne
+                    playerToKill = playerOne if randint(0,1) else playerTwo
                 
                 # No one dies
                 case "neutral":
