@@ -24,6 +24,31 @@ class BattleRoyaleDB:
         )
         self.verbose = verbose
 
+    # A temporary function that helps with the migration of battle wins from rewards to nfttraitlist
+    async def syncBattleWins(self):
+        async with self.asyncSessionMaker() as session:
+            async with session.begin():
+                query = select(
+                    RewardsTable.tokenIdBattleNFT, RewardsTable.battleWins
+                ).filter(RewardsTable.tokenIdBattleNFT != "")
+                query = await session.execute(query)
+                entries = query.all()
+
+                for tokenId, battleWins in entries:
+                    await session.execute(
+                        update(NFTTraitList)
+                        .where(NFTTraitList.tokenId == tokenId)
+                        .values(battleWins=battleWins)
+                    )
+                    (
+                        loggingInstance.info(
+                            f"addBoost({tokenId}, {battleWins}): Success"
+                        )
+                        if self.verbose
+                        else None
+                    )
+        print("Done")
+
     async def getNFTInfo(self, uniqueId="", npc=False):
         async with self.asyncSessionMaker() as session:
 
