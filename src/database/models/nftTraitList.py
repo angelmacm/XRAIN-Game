@@ -62,3 +62,4 @@ class NFTTraitList(Base):
     sellAmt = Column(Integer)
     sellDate = Column(Date)
     reputationFlag = Column(Integer)
+    battleWins = Column(Integer)
