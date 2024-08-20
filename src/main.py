@@ -239,7 +239,8 @@ async def chooseNft(ctx: InteractionContext):
                 nftLink=chosen_nft['nftLink'],
                 xrainPower=chosen_nft['totalXrain'],
                 taxonId=chosen_nft['taxonId'],
-                groupName=chosen_group
+                groupName=chosen_group,
+                battleWinArg=chosen_nft['battleWins']
             )
             embed = Embed(
                 title="Chosen NFT",
@@ -655,7 +656,7 @@ async def battleRoyale(ctx: InteractionContext):
     statsEmbed.add_field(name="**Top 3 Revives**", value=mostRevives,inline=True)
     statsEmbed.set_footer("XRPLRainforest Battle Royale")    
     
-    await dbInstance.addWin(battleResults['winner'].xrpId)
+    await dbInstance.addWin(battleResults['winner'].xrpId, battleResults['winner'].NFT, battleResults['winner'].npc)
     
     await ctx.send(embeds=[winnerImageEmbed, claimEmbed, winnerTextEmbed, statsEmbed])
     

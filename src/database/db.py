@@ -3,7 +3,7 @@ from components.config import dbConfig
 from components.logging import loggingInstance
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy import update, or_
+from sqlalchemy import update, or_, and_
 from sqlalchemy.sql import func
 from datetime import timedelta, datetime
 from sqlalchemy.future import select
@@ -134,7 +134,9 @@ class BattleRoyaleDB:
                 "npc": npc,
             }
 
-    async def setNFT(self, xrpId, token, nftLink, xrainPower, taxonId, groupName):
+    async def setNFT(
+        self, xrpId, token, nftLink, xrainPower, taxonId, groupName, battleWinArg
+    ):
         async with self.asyncSessionMaker() as session:
             async with session.begin():
                 await session.execute(
@@ -146,6 +148,7 @@ class BattleRoyaleDB:
                         xrainPower=xrainPower,
                         taxonId=taxonId,
                         nftGroupName=groupName,
+                        battleWins=battleWinArg,
                     )
                 )
                 (
@@ -163,6 +166,7 @@ class BattleRoyaleDB:
                     NFTTraitList.totalXRAIN,
                     NFTTraitList.nftGroupName,
                     NFTTraitList.taxonId,
+                    NFTTraitList.battleWins,
                 )
                 .filter(RewardsTable.discordId == discordID, NFTTraitList.nftlink != "")
                 .order_by(NFTTraitList.nftGroupName)
@@ -183,13 +187,14 @@ class BattleRoyaleDB:
             nftOptions = {}
 
             for row in queryResult:
-                tokenId, nftLink, totalXrain, nftGroupName, taxonId = row
+                tokenId, nftLink, totalXrain, nftGroupName, taxonId, battleWins = row
                 entry = {
                     "tokenId": tokenId,
                     "nftLink": nftLink,
                     "totalXrain": totalXrain,
                     "taxonId": taxonId,
                     "label": f"{nftGroupName} *{tokenId[-6:]} | XRAIN {totalXrain}",
+                    "battleWins": battleWins,
                 }
 
                 if not len(nftGroupName):
@@ -208,7 +213,7 @@ class BattleRoyaleDB:
 
             return nftOptions
 
-    async def addWin(self, xrpId):
+    async def addWin(self, xrpId, tokenId, isNPC):
         async with self.asyncSessionMaker() as session:
             async with session.begin():
                 await session.execute(
@@ -217,10 +222,28 @@ class BattleRoyaleDB:
                     .values(battleWins=RewardsTable.battleWins + 1)
                 )
                 (
-                    loggingInstance.info(f"addWin({xrpId}): Success")
+                    loggingInstance.info(f"Rewards addWin({xrpId, tokenId}): Success")
                     if self.verbose
                     else None
                 )
+                if not isNPC:
+                    await session.execute(
+                        update(NFTTraitList)
+                        .where(
+                            and_(
+                                NFTTraitList.tokenId == tokenId,
+                                NFTTraitList.xrpId == xrpId,
+                            )
+                        )
+                        .values(battleWins=NFTTraitList.battleWins + 1)
+                    )
+                    (
+                        loggingInstance.info(
+                            f"NFTTraitList addWin({xrpId, tokenId}): Success"
+                        )
+                        if self.verbose
+                        else None
+                    )
 
     async def addBoost(self, uniqueId, boost):
         async with self.asyncSessionMaker() as session:
