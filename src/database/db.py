@@ -16,7 +16,7 @@ class BattleRoyaleDB:
         sqlLink = f"mysql+aiomysql://{username}{'' if password in ['', None] else f':{password}'}@{host}/{dbName}"
         loggingInstance.info(f"DB Link: {sqlLink}")
         self.dbEngine = create_async_engine(
-            sqlLink, pool_recycle=3600, pool_pre_ping=True
+            sqlLink, pool_recycle=1800, pool_pre_ping=True, pool_use_lifo=True
         )
 
         self.asyncSessionMaker = async_sessionmaker(
