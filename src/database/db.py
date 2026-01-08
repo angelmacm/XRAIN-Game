@@ -124,7 +124,7 @@ class BattleRoyaleDB:
                 "xrpId": xrpId,
                 "nftToken": tokenId,
                 "xrainPower": xrainPower,
-                "nftLink": nftLink,
+                "nftLink": update_nftLink(nftLink),
                 "reserveXrain": reserveXrain,
                 "reserveBoosts": reserveBoosts,
                 "battleWins": battleWins,
@@ -144,7 +144,7 @@ class BattleRoyaleDB:
                     .where(RewardsTable.xrpId == xrpId)
                     .values(
                         tokenIdBattleNFT=token,
-                        nftlink=nftLink,
+                        nftlink=update_nftLink(nftLink),
                         xrainPower=xrainPower,
                         taxonId=taxonId,
                         nftGroupName=groupName,
@@ -190,7 +190,7 @@ class BattleRoyaleDB:
                 tokenId, nftLink, totalXrain, nftGroupName, taxonId, battleWins = row
                 entry = {
                     "tokenId": tokenId,
-                    "nftLink": nftLink,
+                    "nftLink": update_nftLink(nftLink),
                     "totalXrain": totalXrain,
                     "taxonId": taxonId,
                     "label": f"{nftGroupName} *{tokenId[-6:]} | XRAIN {totalXrain}",
@@ -429,3 +429,13 @@ class BattleRoyaleDB:
                 else None
             )
             return funcResult
+
+
+def update_nftLink(nftLink):
+    if not isinstance(nftLink, str):
+        return nftLink
+    if "ipfs.bithomp.com" in nftLink:
+        return nftLink
+    return nftLink.replace(".ipfs.w3s.link", "").replace(
+        "https://", "https://ipfs.bithomp.com/image/"
+    )
