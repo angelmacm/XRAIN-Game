@@ -436,6 +436,12 @@ def update_nftLink(nftLink):
         return nftLink
     if "ipfs.bithomp.com" in nftLink:
         return nftLink
-    return nftLink.replace(".ipfs.w3s.link", "").replace(
-        "https://", "https://ipfs.bithomp.com/image/"
-    )
+    if (
+        ".ipfs.w3s.link" in nftLink
+        or nftLink.startswith("https://ipfs")
+        or "ipfs://" in nftLink
+    ):
+        return nftLink.replace(".ipfs.w3s.link", "").replace(
+            "https://", "https://ipfs.bithomp.com/image/"
+        )
+    return nftLink
