@@ -9,6 +9,20 @@ from datetime import timedelta, datetime
 from sqlalchemy.future import select
 
 
+default_images = {
+    "3D XChameleons": "https://drive.google.com/drive-viewer/AKGpihY9B0Ok1Q5d1q7ymGOY0l9Ctjk8URE0peEQEWYEP9HlL3qOt7aMuezmZOX6Xtc_MKbkHWrPSuyk8bdku4ezTxoJv-1VZo0q1PY=w1111-h917-rw-v1",
+    "3D Bad XParrots": "https://drive.google.com/drive-viewer/AKGpihbmFwk13czo8620g1bd7BnxjwaWhL_3c_YL9mEknxsMGq7lKs-RQKJGHwcjMMlsL9GKzz1zYpNPXZF0cSW57x1PSXbwvzmUAko=w1111-h917-rw-v1",
+    "3D Good XParrots": "https://drive.google.com/drive-viewer/AKGpihbmFwk13czo8620g1bd7BnxjwaWhL_3c_YL9mEknxsMGq7lKs-RQKJGHwcjMMlsL9GKzz1zYpNPXZF0cSW57x1PSXbwvzmUAko=w1111-h917-rw-v1",
+    "3D XParrots": "https://drive.google.com/drive-viewer/AKGpihbmFwk13czo8620g1bd7BnxjwaWhL_3c_YL9mEknxsMGq7lKs-RQKJGHwcjMMlsL9GKzz1zYpNPXZF0cSW57x1PSXbwvzmUAko=w1111-h917-rw-v1",
+    "OG Genesis Keys": "https://drive.google.com/drive-viewer/AKGpihZ8KgzCsAJ6sATShe3xwMXuWV90NqdFpQ5GeixB4vwg26u13G4Z5nNSO-alJJu4VPsp6leeOUGnwLD_YgYbqImNTrSpiNIMVSM=w1111-h917-rw-v1",
+    "XRPL Moonbirds": "https://drive.google.com/drive-viewer/AKGpihYQS43mnX_m3_Z_JcedI_Pd0OoRJWTr6yp-JS3Qz-ubs9ltZTcjfjDwMcfLOSTTzr9f3oMlF6T1U5ZMtXYQOOVMqBUtPETa-wA=w1111-h917",
+    "XRPLMoonbirds": "https://drive.google.com/drive-viewer/AKGpihYQS43mnX_m3_Z_JcedI_Pd0OoRJWTr6yp-JS3Qz-ubs9ltZTcjfjDwMcfLOSTTzr9f3oMlF6T1U5ZMtXYQOOVMqBUtPETa-wA=w1111-h917",
+    "XChameleons": "https://drive.google.com/drive-viewer/AKGpihZNZl7cb0eP-a3jEDT19ycxxztsJBcXyd-5AsZUyKoKhsM5x9l961FuzghfzfthggvnmHF47Jytg_UsJ3TLO77klPn3ns_sIXE=w1111-h917",
+    "Collab XParrots": "https://drive.google.com/drive-viewer/AKGpihZMuhRvrfffWz8hg2QbwDtOtMswvY4d38V8e_PybgHwXHok5MiGlpVYOraFXv_8rn8bUkj21kLplcBbmucFrOkhcvXgaFwu4GQ=w1111-h917",
+    "XParrots": "https://drive.google.com/drive-viewer/AKGpihZMuhRvrfffWz8hg2QbwDtOtMswvY4d38V8e_PybgHwXHok5MiGlpVYOraFXv_8rn8bUkj21kLplcBbmucFrOkhcvXgaFwu4GQ=w1111-h917",
+}
+
+
 class BattleRoyaleDB:
     def __init__(self, host, dbName, username, password, verbose):
 
@@ -124,7 +138,7 @@ class BattleRoyaleDB:
                 "xrpId": xrpId,
                 "nftToken": tokenId,
                 "xrainPower": xrainPower,
-                "nftLink": update_nftLink(nftLink),
+                "nftLink": update_nftLink(nftLink, nftGroupName),
                 "reserveXrain": reserveXrain,
                 "reserveBoosts": reserveBoosts,
                 "battleWins": battleWins,
@@ -144,7 +158,7 @@ class BattleRoyaleDB:
                     .where(RewardsTable.xrpId == xrpId)
                     .values(
                         tokenIdBattleNFT=token,
-                        nftlink=update_nftLink(nftLink),
+                        nftlink=update_nftLink(nftLink, groupName),
                         xrainPower=xrainPower,
                         taxonId=taxonId,
                         nftGroupName=groupName,
@@ -190,7 +204,7 @@ class BattleRoyaleDB:
                 tokenId, nftLink, totalXrain, nftGroupName, taxonId, battleWins = row
                 entry = {
                     "tokenId": tokenId,
-                    "nftLink": update_nftLink(nftLink),
+                    "nftLink": update_nftLink(nftLink, nftGroupName),
                     "totalXrain": totalXrain,
                     "taxonId": taxonId,
                     "label": f"{nftGroupName} *{tokenId[-6:]} | XRAIN {totalXrain}",
@@ -431,7 +445,12 @@ class BattleRoyaleDB:
             return funcResult
 
 
-def update_nftLink(nftLink):
+def update_nftLink(nftLink, nftGroupName=None):
+    if not nftLink:
+        placeholder_image = default_images.get(nftGroupName)
+        if placeholder_image is None:
+            raise ValueError("No NFT link image available.")
+        return placeholder_image
     if not isinstance(nftLink, str):
         return nftLink
     if "ipfs.bithomp.com" in nftLink:
