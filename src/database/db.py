@@ -148,25 +148,25 @@ class BattleRoyaleDB:
             elif battleWins < 100:
                 battleRank = "Golden Oracle Warlord :trident:"
 
-                (
-                    loggingInstance.info(f"getNFTInfo({uniqueId}): Success")
-                    if self.verbose
-                    else None
-                )
+            (
+                loggingInstance.info(f"getNFTInfo({uniqueId}): Success")
+                if self.verbose
+                else None
+            )
 
-                return {
-                    "xrpId": xrpId,
-                    "nftToken": tokenId,
-                    "xrainPower": xrainPower,
-                    "nftLink": update_nftLink(nftLink, nftGroupName),
-                    "reserveXrain": reserveXrain,
-                    "reserveBoosts": reserveBoosts,
-                    "battleWins": battleWins,
-                    "battleRank": battleRank,
-                    "nftGroupName": nftGroupName,
-                    "taxonId": taxonId,
-                    "npc": npc,
-                }
+            return {
+                "xrpId": xrpId,
+                "nftToken": tokenId,
+                "xrainPower": xrainPower,
+                "nftLink": update_nftLink(nftLink, nftGroupName),
+                "reserveXrain": reserveXrain,
+                "reserveBoosts": reserveBoosts,
+                "battleWins": battleWins,
+                "battleRank": battleRank,
+                "nftGroupName": nftGroupName,
+                "taxonId": taxonId,
+                "npc": npc,
+            }
         except Exception as e:
             loggingInstance.error(f"getNFTInfo({uniqueId}): Error - {str(e)}")
             raise
