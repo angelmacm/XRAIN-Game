@@ -259,7 +259,7 @@ class BattleRoyaleDB:
                     else None
                 )
 
-                return nftOptions
+            return nftOptions
         except Exception as e:
             loggingInstance.error(f"getNFTOption({discordID}): Error - {str(e)}")
             raise
