@@ -572,7 +572,12 @@ async def battleRoyale(ctx: InteractionContext):
                                  mention=users.mention if not npc else None,
                                  xrainPower=totalBoost)
         
-        playerInstance.addNFTImage(await fetchImage(playerInstance.nftLink))
+        try:
+            playerInstance.addNFTImage(await fetchImage(playerInstance.nftLink))
+        except Exception as e:
+            loggingInstance.error(f"Failed to fetch NFT image for {playerInstance.xrpId}: {str(e)}")
+            # Set a default/placeholder image or None
+            playerInstance.addNFTImage(await fetchImage(dbInstance.get_default_nftLink(playerInstance.nftGroupName)))
         
         battleInstance.join(playerInstance)
         
@@ -736,8 +741,44 @@ async def postRoundInfo(channel:InteractionContext.channel,
     await channel.send(embed=postRoundEmbed )  
         
 async def fetchImage(url):
-    response = requests.get(url)
-    return Image.open(BytesIO(response.content))
+    try:
+        loggingInstance.info(f"fetchImage: Fetching image from URL={url[:100]}...")
+        
+        if not url or not isinstance(url, str):
+            loggingInstance.error(f"fetchImage: Invalid URL provided - {url}")
+            raise ValueError("Invalid URL provided")
+        
+        # Use aiohttp or run_in_executor for non-blocking HTTP request
+        # For now, adding timeout and error handling to requests
+        response = requests.get(url, timeout=10, allow_redirects=True)
+        
+        if response.status_code != 200:
+            loggingInstance.error(f"fetchImage: HTTP error {response.status_code} for URL={url[:100]}")
+            raise Exception(f"HTTP {response.status_code} error fetching image")
+        
+        if not response.content:
+            loggingInstance.error(f"fetchImage: Empty response content from URL={url[:100]}")
+            raise Exception("Empty image content received")
+        
+        loggingInstance.info(f"fetchImage: Image fetched successfully, size={len(response.content)} bytes")
+        
+        image = Image.open(BytesIO(response.content))
+        loggingInstance.info(f"fetchImage: Image opened successfully, format={image.format}, size={image.size}")
+        
+        return image
+        
+    except requests.exceptions.Timeout:
+        loggingInstance.error(f"fetchImage: Timeout fetching image from URL={url[:100]}")
+        raise Exception("Image fetch timeout")
+    except requests.exceptions.ConnectionError as e:
+        loggingInstance.error(f"fetchImage: Connection error for URL={url[:100]} - {str(e)}")
+        raise Exception("Image fetch connection error")
+    except requests.exceptions.RequestException as e:
+        loggingInstance.error(f"fetchImage: Request exception for URL={url[:100]} - {str(e)}")
+        raise Exception(f"Image fetch failed: {str(e)}")
+    except Exception as e:
+        loggingInstance.error(f"fetchImage: Unexpected error for URL={url[:100]} - {str(e)}")
+        raise
     
 async def create_collage(images):
     possibleEntryPerRow = [1,2,3,4,5]

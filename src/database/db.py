@@ -559,6 +559,18 @@ class BattleRoyaleDB:
             loggingInstance.error(f"getClaimQuote({taxonId}): Error - {str(e)}")
             raise
 
+    def get_default_nftLink(self, nftGroupName):
+        placeholder_image = default_images.get(nftGroupName)
+        if placeholder_image is None:
+            loggingInstance.error(
+                f"get_default_nftLink: No placeholder image available for group={nftGroupName}"
+            )
+            raise ValueError("No NFT link image available.")
+        loggingInstance.info(
+            f"get_default_nftLink: Using placeholder for {nftGroupName}"
+        )
+        return placeholder_image
+
 
 def update_nftLink(nftLink, nftGroupName=None):
     try:
