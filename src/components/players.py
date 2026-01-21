@@ -1,5 +1,20 @@
 class Players:
-    def __init__(self, xrpId, wager, name, discordId, battleWins, tokenId, boosts:int = 0, xrainPower:int = 0, nftLink = "", taxonId = 0, npc = False, mention = ""):
+    def __init__(
+        self,
+        xrpId,
+        wager,
+        name,
+        discordId,
+        battleWins,
+        tokenId,
+        boosts: int = 0,
+        xrainPower: int = 0,
+        nftLink="",
+        taxonId=0,
+        npc=False,
+        mention="",
+        nftGroupName="",
+    ):
         self.xrpId = xrpId
         self.wager = wager
         self.name = name
@@ -21,13 +36,13 @@ class Players:
     def kill(self):
         self.alive = False
         self.deaths += 1
-        
+
     def revive(self):
         self.alive = True
         self.reviveNum += 1
-        
+
     def addKill(self):
         self.kills += 1
-        
+
     def addNFTImage(self, nftImage):
         self.nftImage = nftImage
