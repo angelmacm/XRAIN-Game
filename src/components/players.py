@@ -14,9 +14,10 @@ class Players:
         self.nftLink = nftLink
         self.deaths = 0
         self.taxonId = taxonId
-        self.npc =  npc
+        self.npc = npc
         self.mention = mention
-        
+        self.nftGroupName = nftGroupName
+
     def kill(self):
         self.alive = False
         self.deaths += 1

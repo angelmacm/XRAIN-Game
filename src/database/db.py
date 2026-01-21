@@ -573,38 +573,21 @@ class BattleRoyaleDB:
 
 
 def update_nftLink(nftLink, nftGroupName=None):
-    try:
-        if not nftLink:
-            loggingInstance.info(
-                f"update_nftLink: No link provided, using placeholder for group={nftGroupName}"
-            )
-            placeholder_image = default_images.get(nftGroupName)
-            if placeholder_image is None:
-                loggingInstance.error(
-                    f"update_nftLink: No placeholder image available for group={nftGroupName}"
-                )
-                raise ValueError("No NFT link image available.")
-            return placeholder_image
-        if not isinstance(nftLink, str):
-            loggingInstance.warning(
-                f"update_nftLink: nftLink is not a string, returning as-is: {type(nftLink)}"
-            )
-            return nftLink
-        if "ipfs.bithomp.com" in nftLink:
-            return nftLink
-        if (
-            ".ipfs.w3s.link" in nftLink
-            or nftLink.startswith("https://ipfs")
-            or "ipfs://" in nftLink
-        ):
-            updatedLink = nftLink.replace(".ipfs.w3s.link", "").replace(
-                "https://", "https://ipfs.bithomp.com/image/"
-            )
-            loggingInstance.info(f"update_nftLink: Converted IPFS link")
-            return updatedLink
+    if not nftLink:
+        placeholder_image = default_images.get(nftGroupName)
+        if placeholder_image is None:
+            raise ValueError("No NFT link image available.")
+        return placeholder_image
+    if not isinstance(nftLink, str):
         return nftLink
-    except Exception as e:
-        loggingInstance.error(
-            f"update_nftLink: Error processing nftLink={nftLink}, group={nftGroupName} - {str(e)}"
+    if "ipfs.bithomp.com" in nftLink:
+        return nftLink
+    if (
+        ".ipfs.w3s.link" in nftLink
+        or nftLink.startswith("https://ipfs")
+        or "ipfs://" in nftLink
+    ):
+        return nftLink.replace(".ipfs.w3s.link", "").replace(
+            "https://", "https://ipfs.bithomp.com/image/"
         )
-        raise
+    return nftLink

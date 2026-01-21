@@ -569,6 +569,7 @@ async def battleRoyale(ctx: InteractionContext):
                                  nftLink=playerInfo['nftLink'],
                                  taxonId=playerInfo['taxonId'],
                                  npc=playerInfo['npc'],
+                                 nftGroupName=playerInfo['nftGroupName'],
                                  mention=users.mention if not npc else None,
                                  xrainPower=totalBoost)
         
