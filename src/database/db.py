@@ -10,16 +10,16 @@ from sqlalchemy.future import select
 
 
 default_images = {
-    "3D XChameleons": "https://drive.google.com/drive-viewer/AKGpihY9B0Ok1Q5d1q7ymGOY0l9Ctjk8URE0peEQEWYEP9HlL3qOt7aMuezmZOX6Xtc_MKbkHWrPSuyk8bdku4ezTxoJv-1VZo0q1PY=w1111-h917-rw-v1",
-    "3D Bad XParrots": "https://drive.google.com/drive-viewer/AKGpihbmFwk13czo8620g1bd7BnxjwaWhL_3c_YL9mEknxsMGq7lKs-RQKJGHwcjMMlsL9GKzz1zYpNPXZF0cSW57x1PSXbwvzmUAko=w1111-h917-rw-v1",
-    "3D Good XParrots": "https://drive.google.com/drive-viewer/AKGpihbmFwk13czo8620g1bd7BnxjwaWhL_3c_YL9mEknxsMGq7lKs-RQKJGHwcjMMlsL9GKzz1zYpNPXZF0cSW57x1PSXbwvzmUAko=w1111-h917-rw-v1",
-    "3D XParrots": "https://drive.google.com/drive-viewer/AKGpihbmFwk13czo8620g1bd7BnxjwaWhL_3c_YL9mEknxsMGq7lKs-RQKJGHwcjMMlsL9GKzz1zYpNPXZF0cSW57x1PSXbwvzmUAko=w1111-h917-rw-v1",
-    "OG Genesis Keys": "https://drive.google.com/drive-viewer/AKGpihZ8KgzCsAJ6sATShe3xwMXuWV90NqdFpQ5GeixB4vwg26u13G4Z5nNSO-alJJu4VPsp6leeOUGnwLD_YgYbqImNTrSpiNIMVSM=w1111-h917-rw-v1",
-    "XRPL Moonbirds": "https://drive.google.com/drive-viewer/AKGpihYQS43mnX_m3_Z_JcedI_Pd0OoRJWTr6yp-JS3Qz-ubs9ltZTcjfjDwMcfLOSTTzr9f3oMlF6T1U5ZMtXYQOOVMqBUtPETa-wA=w1111-h917",
-    "XRPLMoonbirds": "https://drive.google.com/drive-viewer/AKGpihYQS43mnX_m3_Z_JcedI_Pd0OoRJWTr6yp-JS3Qz-ubs9ltZTcjfjDwMcfLOSTTzr9f3oMlF6T1U5ZMtXYQOOVMqBUtPETa-wA=w1111-h917",
-    "XChameleons": "https://drive.google.com/drive-viewer/AKGpihZNZl7cb0eP-a3jEDT19ycxxztsJBcXyd-5AsZUyKoKhsM5x9l961FuzghfzfthggvnmHF47Jytg_UsJ3TLO77klPn3ns_sIXE=w1111-h917",
-    "Collab XParrots": "https://drive.google.com/drive-viewer/AKGpihZMuhRvrfffWz8hg2QbwDtOtMswvY4d38V8e_PybgHwXHok5MiGlpVYOraFXv_8rn8bUkj21kLplcBbmucFrOkhcvXgaFwu4GQ=w1111-h917",
-    "XParrots": "https://drive.google.com/drive-viewer/AKGpihZMuhRvrfffWz8hg2QbwDtOtMswvY4d38V8e_PybgHwXHok5MiGlpVYOraFXv_8rn8bUkj21kLplcBbmucFrOkhcvXgaFwu4GQ=w1111-h917",
+    "3D XChameleons": "https://cdn.designfast.io/image/2026-01-23/96906d5e-0e66-4132-83b6-5de2b56c0b31.jpeg",
+    "3D Bad XParrots": "https://cdn.designfast.io/image/2026-01-23/96e161ae-208e-425f-b266-bd3375123f52.jpeg",
+    "3D Good XParrots": "https://cdn.designfast.io/image/2026-01-23/96e161ae-208e-425f-b266-bd3375123f52.jpeg",
+    "3D XParrots": "https://cdn.designfast.io/image/2026-01-23/96e161ae-208e-425f-b266-bd3375123f52.jpeg",
+    "OG Genesis Keys": "https://cdn.designfast.io/image/2026-01-23/98b9f8c2-153d-49ce-96d4-7228d54e6e63.jpeg",
+    "XRPL Moonbirds": "https://cdn.designfast.io/image/2026-01-23/24859cfe-8f6c-4490-a83a-a28301ed526a.webp",
+    "XRPLMoonbirds": "https://cdn.designfast.io/image/2026-01-23/24859cfe-8f6c-4490-a83a-a28301ed526a.webp",
+    "XChameleons": "https://cdn.designfast.io/image/2026-01-23/66e42ff3-7e2b-464e-a7ed-7c577f12f793.jpeg",
+    "Collab XParrots": "https://cdn.designfast.io/image/2026-01-23/775c0669-4cfd-4b0e-8294-d9cf33df4ab0.jpeg",
+    "XParrots": "https://cdn.designfast.io/image/2026-01-23/775c0669-4cfd-4b0e-8294-d9cf33df4ab0.jpeg",
 }
 
 
